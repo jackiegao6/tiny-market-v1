@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: tiny-market-v1-app
+  profiles:
+    active: dev

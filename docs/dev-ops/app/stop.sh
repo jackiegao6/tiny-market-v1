@@ -1,0 +1,1 @@
+docker stop tiny-market-v1
