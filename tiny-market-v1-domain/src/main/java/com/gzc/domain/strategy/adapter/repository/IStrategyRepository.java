@@ -33,4 +33,6 @@ public interface IStrategyRepository {
 
     boolean hasStrategyAwardSearchRateTable(String armoryAwardsKey);
 
+    String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
+
 }

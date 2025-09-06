@@ -96,6 +96,16 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
+    public String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel) {
+        StrategyRule strategyRule = new StrategyRule();
+        strategyRule.setStrategyId(strategyId);
+        strategyRule.setAwardId(awardId);
+        strategyRule.setRuleModel(ruleModel);
+
+        return strategyRuleDao.queryStrategyRuleValue(strategyRule);
+    }
+
+    @Override
     public boolean hasStrategyAwardSearchRateTable(String armoryAwardsKey) {
         Map<Integer, Integer> cacheRateTable = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + armoryAwardsKey);
         return !cacheRateTable.isEmpty();
