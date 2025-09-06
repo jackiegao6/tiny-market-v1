@@ -4,6 +4,7 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.service.rule.chain.AbstractLogicChain;
 import com.gzc.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,10 +21,13 @@ public class BackListLogicChain extends AbstractLogicChain {
 
     @Override
     public Integer logic(String userId, Long strategyId) {
-        log.info("抽奖责任链-黑名单开始 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
 
         // 查询规则值配置
         String ruleValue = repository.queryStrategyRuleValue(strategyId, ruleModel());
+        if (StringUtils.isBlank(ruleValue)){
+            // 该策略并未配置黑名单规则
+            return next().logic(userId, strategyId);
+        }
         String[] splitRuleValue = ruleValue.split(Constants.COLON);
         Integer awardId = Integer.parseInt(splitRuleValue[0]);
 
@@ -35,9 +39,6 @@ public class BackListLogicChain extends AbstractLogicChain {
                 return awardId;
             }
         }
-
-        // 过滤其他责任链
-        log.info("抽奖责任链-黑名单放行 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
         return next().logic(userId, strategyId);
     }
 

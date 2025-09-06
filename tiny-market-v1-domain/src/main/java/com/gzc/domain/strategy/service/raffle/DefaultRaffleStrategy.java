@@ -6,6 +6,7 @@ import com.gzc.domain.strategy.model.entity.RuleActionEntity;
 import com.gzc.domain.strategy.model.entity.RuleMatterEntity;
 import com.gzc.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.gzc.domain.strategy.service.rule.filter.ILogicFilter;
 import com.gzc.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,9 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
     @Resource
     private DefaultLogicFactory logicFactory;
 
-    public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch) {
-        super(repository, strategyDispatch);
+    public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch, DefaultChainFactory defaultChainFactory, DefaultLogicFactory logicFactory) {
+        super(repository, strategyDispatch, defaultChainFactory);
+        this.logicFactory = logicFactory;
     }
 
     @Override

@@ -5,8 +5,8 @@ import com.gzc.domain.strategy.model.entity.RaffleAwardEntity;
 import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
+import com.gzc.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
 import com.gzc.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
-import com.gzc.domain.strategy.service.rule.filter.impl.RuleWeightLogicFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class RaffleStrategyTest {
     @Resource
     private IRaffleStrategy raffleStrategy;
     @Resource
-    private RuleWeightLogicFilter ruleWeightLogicFilter;
+    private RuleWeightLogicChain ruleWeightLogicFilter;
     @Resource
     private RuleLockLogicFilter ruleLockLogicFilter;
 

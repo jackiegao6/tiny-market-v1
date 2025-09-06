@@ -98,7 +98,7 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public String queryStrategyRuleValue(Long strategyId, String ruleModel) {
-        return "";
+        return queryStrategyRuleValue(strategyId, null, ruleModel);
     }
 
     @Override
