@@ -4,6 +4,7 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import com.gzc.infrastructure.dao.IStrategyAwardDao;
 import com.gzc.infrastructure.dao.IStrategyDao;
 import com.gzc.infrastructure.dao.IStrategyRuleDao;
@@ -96,6 +97,11 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
+    public String queryStrategyRuleValue(Long strategyId, String ruleModel) {
+        return "";
+    }
+
+    @Override
     public String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel) {
         StrategyRule strategyRule = new StrategyRule();
         strategyRule.setStrategyId(strategyId);
@@ -103,6 +109,16 @@ public class StrategyRepository implements IStrategyRepository {
         strategyRule.setRuleModel(ruleModel);
 
         return strategyRuleDao.queryStrategyRuleValue(strategyRule);
+    }
+
+    @Override
+    public StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId) {
+        StrategyAward strategyAward = new StrategyAward();
+        strategyAward.setStrategyId(strategyId);
+        strategyAward.setAwardId(awardId);
+
+        String ruleModels = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
+        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
     }
 
     @Override

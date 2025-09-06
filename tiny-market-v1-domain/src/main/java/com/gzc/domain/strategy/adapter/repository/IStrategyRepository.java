@@ -4,6 +4,7 @@ package com.gzc.domain.strategy.adapter.repository;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 
 import java.util.List;
 import java.util.Map;
@@ -34,5 +35,9 @@ public interface IStrategyRepository {
     boolean hasStrategyAwardSearchRateTable(String armoryAwardsKey);
 
     String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
+
+    String queryStrategyRuleValue(Long strategyId, String ruleModel);
+
+    StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
 
 }
