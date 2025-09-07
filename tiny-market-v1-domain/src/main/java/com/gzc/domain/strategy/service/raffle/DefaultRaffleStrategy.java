@@ -3,6 +3,7 @@ package com.gzc.domain.strategy.service.raffle;
 import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.chain.ILogicChain;
 import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
@@ -44,5 +45,15 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         }
         IDecisionTreeEngine treeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
         return treeEngine.process(userId, strategyId, awardId);
+    }
+
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() {
+        return repository.takeQueueValue();
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        repository.updateStrategyAwardStock(strategyId, awardId);
     }
 }

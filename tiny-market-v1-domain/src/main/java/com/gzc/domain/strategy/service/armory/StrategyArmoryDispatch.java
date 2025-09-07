@@ -5,6 +5,7 @@ import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
 import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.types.common.Constants;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class StrategyArmory implements IStrategyArmory, IStrategyDispatch {
+public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatch {
 
     @Resource
     private IStrategyRepository repository;
@@ -64,6 +65,7 @@ public class StrategyArmory implements IStrategyArmory, IStrategyDispatch {
         if(repository.hasStrategyAwardSearchRateTable(armoryAwardsKey)){
             return;
         }
+        assembleLotteryAward(armoryAwardsKey, strategyAwardEntities);
         // 2. 获取最小概率值
         BigDecimal minAwardRate = strategyAwardEntities.stream()
                 .map(StrategyAwardEntity::getAwardRate)
@@ -102,6 +104,17 @@ public class StrategyArmory implements IStrategyArmory, IStrategyDispatch {
         repository.storeStrategyAwardSearchRateTable(armoryAwardsKey, shuffleStrategyAwardSearchRateTable.size(), shuffleStrategyAwardSearchRateTable);
     }
 
+    private void assembleLotteryAward(String armoryAwardsKey, List<StrategyAwardEntity> strategyAwardEntities) {
+
+        for (StrategyAwardEntity entity : strategyAwardEntities) {
+            Integer awardId = entity.getAwardId();
+            Integer awardCount = entity.getAwardCount();
+
+            String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + armoryAwardsKey + Constants.COLON + awardId;
+            repository.cacheLotteryAward(cacheKey, awardCount);
+        }
+    }
+
     @Override
     public Integer getRandomAwardId(Long strategyId) {
         // 分布式部署下，不一定为当前应用做的策略装配。也就是值不一定会保存到本应用，而是分布式应用，所以需要从 Redis 中获取。
@@ -115,5 +128,15 @@ public class StrategyArmory implements IStrategyArmory, IStrategyDispatch {
         String key = String.valueOf(strategyId).concat("_").concat(ruleWeightValue);
         int rateRange = repository.getRateRange(key);
         return repository.getRandomAward(key, new SecureRandom().nextInt(rateRange));
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(Long strategyId, Integer awardId) {
+        return subtractionAwardStock(String.valueOf(strategyId), awardId);
+    }
+
+    private Boolean subtractionAwardStock(String armoryAwardsKey, Integer awardId){
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + armoryAwardsKey + Constants.COLON + awardId;
+        return repository.subtractionAwardStock(cacheKey, awardId);
     }
 }

@@ -6,6 +6,7 @@ import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
 import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 
 import java.util.List;
 import java.util.Map;
@@ -48,5 +49,24 @@ public interface IStrategyRepository {
      * @return 树结构信息
      */
     RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
+
+    /**
+     * 缓存奖品库存
+     */
+    void cacheLotteryAward(String cacheKey, Integer awardCount);
+
+    /**
+     * 扣减奖品库存
+     */
+    Boolean subtractionAwardStock(String cacheKey, Integer awardId);
+
+    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO);
+
+    StrategyAwardStockKeyVO takeQueueValue();
+
+    /**
+     * 跟新数据库表的 库存信息
+     */
+    void updateStrategyAwardStock(Long strategyId, Integer awardId);
 
 }
