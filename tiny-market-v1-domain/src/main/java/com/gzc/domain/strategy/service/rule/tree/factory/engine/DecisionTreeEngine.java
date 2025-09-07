@@ -31,12 +31,12 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         DefaultTreeFactory.StrategyAwardData strategyAwardData = null;
 
         // 获取基础信息
-        String nextNode = ruleTreeVO.getTreeRootRuleNode();
+        String nextNodeKey = ruleTreeVO.getTreeRootRuleNode();
         Map<String, RuleTreeNodeVO> treeNodeMap = ruleTreeVO.getTreeNodeMap();
 
         // 获取起始节点「根节点记录了第一个要执行的规则」
-        RuleTreeNodeVO ruleTreeNode = treeNodeMap.get(nextNode);
-        while (null != nextNode) {
+        RuleTreeNodeVO ruleTreeNode = treeNodeMap.get(nextNodeKey);
+        while (null != nextNodeKey) {
             // 获取决策节点
             ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(ruleTreeNode.getRuleKey());
 
@@ -45,11 +45,11 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
             RuleLogicCheckTypeVO ruleLogicCheckTypeVO = logicEntity.getRuleLogicCheckType();
             strategyAwardData = logicEntity.getStrategyAwardData();
 
-            log.info("决策树引擎【{}】treeId:{} node:{} code:{}", ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNode, ruleLogicCheckTypeVO.getCode());
+            log.info("决策树引擎【{}】treeId:{} node:{} code:{}", ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNodeKey, ruleLogicCheckTypeVO.getCode());
 
             // 获取下个节点
-            nextNode = nextNode(ruleLogicCheckTypeVO.getCode(), ruleTreeNode.getTreeNodeLineVOList());
-            ruleTreeNode = treeNodeMap.get(nextNode);
+            nextNodeKey = nextNode(ruleLogicCheckTypeVO.getCode(), ruleTreeNode.getTreeNodeLineVOList());
+            ruleTreeNode = treeNodeMap.get(nextNodeKey);
         }
 
         // 返回最终结果
