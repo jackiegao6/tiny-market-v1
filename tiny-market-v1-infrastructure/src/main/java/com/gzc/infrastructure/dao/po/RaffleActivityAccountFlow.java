@@ -1,25 +1,20 @@
 package com.gzc.infrastructure.dao.po;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
- * @description 抽奖活动账户表 持久化对象
+ * @description 抽奖活动账户流水表 持久化对象
  */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class RaffleActivityAccount {
+public class RaffleActivityAccountFlow {
 
     /**
      * 自增ID
      */
-    private Long id;
+    private Integer id;
 
     /**
      * 用户ID
@@ -37,19 +32,9 @@ public class RaffleActivityAccount {
     private Integer totalCount;
 
     /**
-     * 总次数-剩余
-     */
-    private Integer totalCountSurplus;
-
-    /**
      * 日次数
      */
     private Integer dayCount;
-
-    /**
-     * 日次数-剩余
-     */
-    private Integer dayCountSurplus;
 
     /**
      * 月次数
@@ -57,9 +42,19 @@ public class RaffleActivityAccount {
     private Integer monthCount;
 
     /**
-     * 月次数-剩余
+     * 流水ID - 生成的唯一ID
      */
-    private Integer monthCountSurplus;
+    private String flowId;
+
+    /**
+     * 流水渠道（activity-活动领取、sale-购买、redeem-兑换、free-免费赠送）
+     */
+    private String flowChannel;
+
+    /**
+     * 业务ID（外部透传，活动ID、订单ID）
+     */
+    private String bizId;
 
     /**
      * 创建时间
