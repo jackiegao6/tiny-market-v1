@@ -1,5 +1,7 @@
 package com.gzc.domain.strategy.service.rule.chain;
 
+import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+
 public interface ILogicChain extends ILogicChainArmory {
 
     /**
@@ -9,6 +11,6 @@ public interface ILogicChain extends ILogicChainArmory {
      * @param strategyId 策略ID
      * @return 奖品ID
      */
-    Integer logic(String userId, Long strategyId);
+    DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId);
 
 }
