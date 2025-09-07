@@ -7,7 +7,6 @@ import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
 import com.gzc.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +32,7 @@ public class RaffleStrategyTest {
     @Resource
     private RuleWeightLogicChain ruleWeightLogicChain;
 
-    @Before
+    @Test
     public void setUp() {
         // 策略装配 100001、100002、100003
 //        log.info("测试结果：{}", strategyArmory.assembleLotteryStrategy(100001L));

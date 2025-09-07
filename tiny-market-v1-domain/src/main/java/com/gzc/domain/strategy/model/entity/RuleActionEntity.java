@@ -1,6 +1,5 @@
 package com.gzc.domain.strategy.model.entity;
 
-import com.gzc.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import lombok.*;
 
 @Data
@@ -9,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 public class RuleActionEntity<T extends RuleActionEntity.RaffleEntity> {
 
-    private String code = RuleLogicCheckTypeVO.ALLOW.getCode();
-    private String info = RuleLogicCheckTypeVO.ALLOW.getInfo();
+    private String code;
+    private String info;
 
     private String ruleModel;
     private T data;

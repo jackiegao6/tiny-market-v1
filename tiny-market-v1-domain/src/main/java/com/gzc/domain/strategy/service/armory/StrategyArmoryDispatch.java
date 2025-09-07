@@ -108,7 +108,7 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
 
         for (StrategyAwardEntity entity : strategyAwardEntities) {
             Integer awardId = entity.getAwardId();
-            Integer awardCount = entity.getAwardCount();
+            Integer awardCount = entity.getAwardCountSurplus();
 
             String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + armoryAwardsKey + Constants.COLON + awardId;
             repository.cacheLotteryAward(cacheKey, awardCount);
