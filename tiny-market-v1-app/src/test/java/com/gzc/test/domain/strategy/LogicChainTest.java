@@ -1,4 +1,4 @@
-package com.gzc.test.domain;
+package com.gzc.test.domain.strategy;
 
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.rule.chain.ILogicChain;
