@@ -1,4 +1,4 @@
-package com.gzc.domain.activity.service.rule.impl;
+package com.gzc.domain.activity.service.quota.rule.impl;
 
 import com.gzc.domain.activity.adapter.repository.IActivityRepository;
 import com.gzc.domain.activity.model.entity.ActivityCountEntity;
@@ -6,7 +6,7 @@ import com.gzc.domain.activity.model.entity.ActivityEntity;
 import com.gzc.domain.activity.model.entity.ActivitySkuEntity;
 import com.gzc.domain.activity.model.valobj.ActivitySkuStockKeyVO;
 import com.gzc.domain.activity.service.armory.IActivityDispatch;
-import com.gzc.domain.activity.service.rule.AbstractActionChain;
+import com.gzc.domain.activity.service.quota.rule.AbstractActionChain;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;

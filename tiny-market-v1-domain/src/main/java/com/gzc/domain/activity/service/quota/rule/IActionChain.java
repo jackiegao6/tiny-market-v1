@@ -1,4 +1,4 @@
-package com.gzc.domain.activity.service.rule;
+package com.gzc.domain.activity.service.quota.rule;
 
 import com.gzc.domain.activity.model.entity.ActivityCountEntity;
 import com.gzc.domain.activity.model.entity.ActivityEntity;

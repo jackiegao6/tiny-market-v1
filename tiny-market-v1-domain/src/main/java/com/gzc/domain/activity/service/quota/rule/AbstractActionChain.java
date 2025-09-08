@@ -1,4 +1,4 @@
-package com.gzc.domain.activity.service.rule;
+package com.gzc.domain.activity.service.quota.rule;
 
 public abstract class AbstractActionChain implements IActionChain {
 
