@@ -59,7 +59,7 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder {
         ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
 
         IActionChain actionChain = defaultActivityChainFactory.openActionChain();
-        Boolean success = actionChain.logic(activitySkuEntity, activityEntity, activityCountEntity);
+        actionChain.logic(activitySkuEntity, activityEntity, activityCountEntity);
 
         CreateOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
 

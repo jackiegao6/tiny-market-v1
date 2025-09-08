@@ -3,6 +3,7 @@ package com.gzc.domain.activity.service;
 import com.gzc.domain.activity.adapter.repository.IActivityRepository;
 import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.activity.model.entity.*;
+import com.gzc.domain.activity.model.valobj.ActivitySkuStockKeyVO;
 import com.gzc.domain.activity.model.valobj.OrderStateVO;
 import com.gzc.domain.activity.service.rule.factory.DefaultActivityChainFactory;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,7 +15,7 @@ import java.util.Date;
  * @description 抽奖活动服务
  */
 @Service
-public class RaffleActivityService extends AbstractRaffleActivity {
+public class RaffleActivityService extends AbstractRaffleActivity implements ISkuStock{
 
     public RaffleActivityService(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
         super(activityRepository, defaultActivityChainFactory);
@@ -52,5 +53,25 @@ public class RaffleActivityService extends AbstractRaffleActivity {
     @Override
     protected void doSaveOrder(CreateOrderAggregate createOrderAggregate) {
         activityRepository.doSaveOrder(createOrderAggregate);
+    }
+
+    @Override
+    public ActivitySkuStockKeyVO takeQueueValue() throws InterruptedException {
+        return activityRepository.takeQueueValue();
+    }
+
+    @Override
+    public void clearQueueValue() {
+        activityRepository.clearQueueValue();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        activityRepository.updateActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        activityRepository.clearActivitySkuStock(sku);
     }
 }

@@ -11,6 +11,18 @@ app:
     api-version: v1
     cross-origin: '*'
 
+spring:
+  rabbitmq:
+    addresses: 192.168.31.25
+    port: 5672
+    username: admin
+    password: admin
+    listener:
+      simple:
+        prefetch: 1 # 每次投递n个消息，消费完在投递n个
+    topic:
+      activity_sku_stock_zero: activity_sku_stock_zero
+
 # 线程池配置
 thread:
   pool:

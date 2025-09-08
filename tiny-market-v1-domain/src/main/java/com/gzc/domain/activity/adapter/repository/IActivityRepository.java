@@ -4,6 +4,9 @@ import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.activity.model.entity.ActivityCountEntity;
 import com.gzc.domain.activity.model.entity.ActivityEntity;
 import com.gzc.domain.activity.model.entity.ActivitySkuEntity;
+import com.gzc.domain.activity.model.valobj.ActivitySkuStockKeyVO;
+
+import java.util.Date;
 
 /**
  * @author Fuzhengwei bugstack.cn @小傅哥
@@ -20,5 +23,18 @@ public interface IActivityRepository {
 
     void doSaveOrder(CreateOrderAggregate createOrderAggregate);
 
+    void cacheActivitySkuStockCount(String cacheKey, Integer stockCountSurplus);
+
+    boolean subtractionActivitySkuStock(Long sku, String cacheKey, Date endDateTime);
+
+    void activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO build);
+
+    ActivitySkuStockKeyVO takeQueueValue();
+
+    void clearQueueValue();
+
+    void updateActivitySkuStock(Long sku);
+
+    void clearActivitySkuStock(Long sku);
 
 }
