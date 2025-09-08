@@ -1,5 +1,6 @@
 package com.gzc.domain.activity.adapter.repository;
 
+import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.activity.model.entity.ActivityCountEntity;
 import com.gzc.domain.activity.model.entity.ActivityEntity;
 import com.gzc.domain.activity.model.entity.ActivitySkuEntity;
@@ -16,5 +17,8 @@ public interface IActivityRepository {
     ActivityEntity queryRaffleActivityByActivityId(Long activityId);
 
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
+
+    void doSaveOrder(CreateOrderAggregate createOrderAggregate);
+
 
 }
