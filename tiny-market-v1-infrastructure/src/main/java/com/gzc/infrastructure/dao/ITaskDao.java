@@ -1,5 +1,6 @@
 package com.gzc.infrastructure.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouter;
 import com.gzc.infrastructure.dao.po.Task;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,10 +16,10 @@ public interface ITaskDao {
 
     void insert(Task task);
 
-//    @DBRouter
+    @DBRouter
     void updateTaskSendMessageCompleted(Task task);
 
-//    @DBRouter
+    @DBRouter
     void updateTaskSendMessageFail(Task task);
 
     List<Task> queryNoSendMessageTaskList();

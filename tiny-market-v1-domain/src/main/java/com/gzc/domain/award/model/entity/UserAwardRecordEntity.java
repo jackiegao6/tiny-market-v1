@@ -1,22 +1,24 @@
-package com.gzc.infrastructure.dao.po;
+package com.gzc.domain.award.model.entity;
 
-import lombok.*;
+import com.gzc.domain.award.model.valobj.AwardStateVO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * @author Fuzhengwei bugstack.cn @小傅哥
- * @description 用户中奖记录表
- * @create 2024-04-03 15:30
+ * @description 用户中奖记录实体对象
+ * @create 2024-04-06 09:06
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAwardRecord {
+public class UserAwardRecordEntity {
 
-    /** 自增ID */
-    private String id;
     /** 用户ID */
     private String userId;
     /** 活动ID */
@@ -32,10 +34,6 @@ public class UserAwardRecord {
     /** 中奖时间 */
     private Date awardTime;
     /** 奖品状态；create-创建、completed-发奖完成 */
-    private String awardState;
-    /** 创建时间 */
-    private Date createTime;
-    /** 更新时间 */
-    private Date updateTime;
+    private AwardStateVO awardState;
 
 }

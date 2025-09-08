@@ -44,6 +44,11 @@
             <groupId>com.gzc</groupId>
             <artifactId>tiny-market-v1-domain</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>plus.gaga.middleware</groupId>
+            <artifactId>db-router-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,5 +1,6 @@
 package com.gzc.infrastructure.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouterStrategy;
 import com.gzc.infrastructure.dao.po.UserAwardRecord;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @create 2024-04-03 15:57
  */
 @Mapper
-//@DBRouterStrategy(splitTable = true)
+@DBRouterStrategy(splitTable = true)
 public interface IUserAwardRecordDao {
 
     void insert(UserAwardRecord userAwardRecord);
