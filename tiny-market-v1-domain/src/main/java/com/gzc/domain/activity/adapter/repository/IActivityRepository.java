@@ -1,9 +1,15 @@
 package com.gzc.domain.activity.adapter.repository;
 
 import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
+import com.gzc.domain.activity.model.aggregate.partake.CreatePartakeOrderAggregate;
+import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
 import com.gzc.domain.activity.model.entity.ActivityCountEntity;
 import com.gzc.domain.activity.model.entity.ActivityEntity;
 import com.gzc.domain.activity.model.entity.ActivitySkuEntity;
+import com.gzc.domain.activity.model.entity.partake.ActivityAccountDayEntity;
+import com.gzc.domain.activity.model.entity.partake.ActivityAccountMonthEntity;
+import com.gzc.domain.activity.model.entity.partake.PartakeRaffleActivityEntity;
+import com.gzc.domain.activity.model.entity.partake.UserRaffleOrderEntity;
 import com.gzc.domain.activity.model.valobj.ActivitySkuStockKeyVO;
 
 import java.util.Date;
@@ -36,5 +42,15 @@ public interface IActivityRepository {
     void updateActivitySkuStock(Long sku);
 
     void clearActivitySkuStock(Long sku);
+
+    UserRaffleOrderEntity queryNoUsedRaffleOrder(PartakeRaffleActivityEntity partakeRaffleActivityEntity);
+
+    ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
+
+    ActivityAccountMonthEntity queryActivityAccountMonthByUserId(String userId, Long activityId, String month);
+
+    ActivityAccountDayEntity queryActivityAccountDayByUserId(String userId, Long activityId, String day);
+
+    void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
 
 }

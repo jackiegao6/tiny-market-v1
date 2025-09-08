@@ -1,4 +1,5 @@
-package com.gzc.domain.activity.model.entity;
+package com.gzc.domain.activity.model.entity.partake;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,9 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
- * @description 参与抽奖活动实体对象
- * @create 2024-04-04 20:02
+ * 参与抽奖的实体
  */
 @Data
 @Builder
@@ -16,14 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PartakeRaffleActivityEntity {
 
-    /**
-     * 用户ID
-     */
     private String userId;
-
-    /**
-     * 活动ID
-     */
     private Long activityId;
-
 }

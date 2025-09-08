@@ -1,5 +1,6 @@
 package com.gzc.infrastructure.dao;
 
+import cn.bugstack.middleware.db.router.annotation.DBRouter;
 import com.gzc.infrastructure.dao.po.RaffleActivityAccount;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,7 +14,7 @@ public interface IRaffleActivityAccountDao {
 
     int updateAccountQuota(RaffleActivityAccount raffleActivityAccount);
 
-//    @DBRouter
+    @DBRouter
     RaffleActivityAccount queryActivityAccountByUserId(RaffleActivityAccount raffleActivityAccountReq);
 
     int updateActivityAccountSubtractionQuota(RaffleActivityAccount raffleActivityAccount);

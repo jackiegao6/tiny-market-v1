@@ -1,4 +1,4 @@
-package com.gzc.domain.activity.model.entity;
+package com.gzc.domain.activity.model.entity.partake;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
