@@ -72,32 +72,35 @@ public class RaffleStrategyController implements IRaffleService {
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
         try {
-            // 2. 查询策略的奖品配置
+            // 2. 从 strategy_award 表中 查询策略的奖品配置
             List<StrategyAwardEntity> strategyAwardEntities = raffleAwardService.queryRaffleStrategyAwardListByActivityId(activityId);
 
-            // 3. 获取有规则的奖品的 规则配置
+            // 3. 获取有规则的奖品的 规则模型
             String[] treeIds = strategyAwardEntities.stream().map(StrategyAwardEntity::getRuleModels)
                     .filter(ruleModel -> ruleModel != null && !ruleModel.isEmpty())
                     .toArray(String[]::new);
 
-            // 4. 查询规则配置
-            Map<String, Integer> ruleLockCountMap = raffleRule.queryAwardRuleLockCount(treeIds);
+            // 4. 从 strategy_tree_node 表中 在规则模型名字中过滤次数规则 再查询 次数规则值
+            Map<String, Integer> lockCountMap = raffleRule.queryAwardRuleLockCount(treeIds);
 
-            // 5. 获取用户额度
+            // 5. 从 raffle_activity_account_day 表中 获取用户今日的参与量
             Integer dayPartakeCount = raffleOrder.queryRaffleActivityAccountDayPartakeCount(activityId, requestDTO.getUserId());
 
             //6. 填充数据
             List<RaffleAwardListResponseDTO> raffleAwardListResponseDTOS = new ArrayList<>(strategyAwardEntities.size());
             for (StrategyAwardEntity strategyAward : strategyAwardEntities) {
-                Integer awardRuleLockCount = ruleLockCountMap.get(strategyAward.getRuleModels());
+                Integer awardRuleLockCount = lockCountMap.get(strategyAward.getRuleModels());
 
                 raffleAwardListResponseDTOS.add(RaffleAwardListResponseDTO.builder()
                         .awardId(strategyAward.getAwardId())
                         .awardTitle(strategyAward.getAwardTitle())
                         .awardSubtitle(strategyAward.getAwardSubtitle())
                         .sort(strategyAward.getSort())
+                        // 没有当日参与量限制的奖品 awardRuleLockCount 为空
                         .awardRuleLockCount(awardRuleLockCount)
+                        // 没有当日参与量限制的奖品 或者 当日参与量大于次数限制的奖品 isAwardUnlock 为true
                         .isAwardUnlock(null == awardRuleLockCount || dayPartakeCount > awardRuleLockCount)
+                        // 没有当日参与量限制的奖品 或者 当日残余量未大于次数限制的奖品 返回解锁还需的次数
                         .waitUnlockCount(null == awardRuleLockCount || awardRuleLockCount <= dayPartakeCount ? 0 : awardRuleLockCount - dayPartakeCount)
                         .build());
             }
@@ -106,8 +109,6 @@ public class RaffleStrategyController implements IRaffleService {
                     .info(ResponseCode.SUCCESS.getInfo())
                     .data(raffleAwardListResponseDTOS)
                     .build();
-            log.info("查询抽奖奖品列表配置完成 userId:{} activityId：{} response: {}", requestDTO.getUserId(), requestDTO.getActivityId(), JSON.toJSONString(response));
-            // 返回结果
             return response;
         } catch (Exception e) {
             log.error("查询抽奖奖品列表配置失败 userId:{} activityId：{}", requestDTO.getUserId(), requestDTO.getActivityId(), e);
