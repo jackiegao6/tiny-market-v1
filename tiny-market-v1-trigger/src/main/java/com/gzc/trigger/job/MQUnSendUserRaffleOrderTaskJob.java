@@ -57,8 +57,6 @@ public class MQUnSendUserRaffleOrderTaskJob {
             }
         } catch (Exception e) {
             log.error("定时任务，扫描MQ任务表发送消息失败。", e);
-        } finally {
-            dbRouter.clear();
         }
     }
 }

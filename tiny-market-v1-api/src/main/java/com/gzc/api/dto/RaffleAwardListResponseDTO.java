@@ -23,4 +23,12 @@ public class RaffleAwardListResponseDTO {
     // 排序编号
     private Integer sort;
 
+    private Integer awardRuleLockCount;
+
+    // true 已解锁
+    private Boolean isAwardUnlock;
+
+    // 还需的解锁次数
+    private Integer waitUnlockCount;
+
 }

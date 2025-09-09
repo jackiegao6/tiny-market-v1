@@ -18,4 +18,7 @@ public interface IRaffleOrder {
      * @return 活动ID
      */
     String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+
+    Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
+
 }

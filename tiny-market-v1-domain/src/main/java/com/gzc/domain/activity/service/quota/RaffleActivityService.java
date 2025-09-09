@@ -75,4 +75,9 @@ public class RaffleActivityService extends AbstractRaffleActivity implements ISk
     public void clearActivitySkuStock(Long sku) {
         activityRepository.clearActivitySkuStock(sku);
     }
+
+    @Override
+    public Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId) {
+        return activityRepository.queryRaffleActivityAccountDayPartakeCount(activityId, userId);
+    }
 }
