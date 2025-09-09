@@ -65,13 +65,11 @@ public class RaffleActivityController implements IRaffleActivityService {
             activityArmory.assembleActivitySkuByActivityId(activityId);
             // 2. 策略装配
             strategyArmory.assembleLotteryStrategyByActivityId(activityId);
-            Response<Boolean> response = Response.<Boolean>builder()
+            return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())
                     .data(true)
                     .build();
-            log.info("活动装配，数据预热，完成 activityId:{}", activityId);
-            return response;
         } catch (Exception e) {
             log.error("活动装配，数据预热，失败 activityId:{}", activityId, e);
             return Response.<Boolean>builder()
