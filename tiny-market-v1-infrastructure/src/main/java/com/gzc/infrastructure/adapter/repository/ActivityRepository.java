@@ -268,7 +268,7 @@ public class ActivityRepository implements IActivityRepository {
         userRaffleOrderEntity.setOrderState(UserRaffleOrderStateVO.valueOf(userRaffleOrderRes.getOrderState()));
         return userRaffleOrderEntity;
     }
-
+    // 从raffleActivityAccount 表中 查找该用户额度
     @Override
     public ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId) {
         // 1. 查询账户

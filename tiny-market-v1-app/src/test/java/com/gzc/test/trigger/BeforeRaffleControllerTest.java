@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RaffleStrategyControllerTest {
+public class BeforeRaffleControllerTest {
 
     @Resource
     private IBeforeRaffleController beforeRaffleService;

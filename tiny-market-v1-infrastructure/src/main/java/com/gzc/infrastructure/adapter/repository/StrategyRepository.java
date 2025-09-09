@@ -80,6 +80,7 @@ public class StrategyRepository implements IStrategyRepository {
         return strategyAwardEntities;
     }
 
+    // 根据 策略id 获得相应的策略规则
     @Override
     public StrategyEntity queryStrategyEntityByStrategyId(Long strategyId) {
         String cacheKey = Constants.RedisKey.STRATEGY_KEY + strategyId;
@@ -87,11 +88,13 @@ public class StrategyRepository implements IStrategyRepository {
         if (null != strategyEntity) return strategyEntity;
 
         Strategy strategy = strategyDao.queryStrategyByStrategyId(strategyId);
-        return StrategyEntity.builder()
+        strategyEntity = StrategyEntity.builder()
                 .strategyId(strategy.getStrategyId())
                 .strategyDesc(strategy.getStrategyDesc())
                 .ruleModels(strategy.getRuleModels())
                 .build();
+        redisService.setValue(cacheKey, strategyEntity);
+        return strategyEntity;
     }
 
     @Override
@@ -133,7 +136,9 @@ public class StrategyRepository implements IStrategyRepository {
         strategyAward.setAwardId(awardId);
 
         String ruleModels = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
-        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
+        return StrategyAwardRuleModelVO.builder()
+                .ruleModels(ruleModels)
+                .build();
     }
 
     @Override
@@ -269,8 +274,8 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public Boolean subtractionAwardStock(String cacheKey, Integer awardId, Date endDateTime) {
         long surplus = redisService.decr(cacheKey);
-        if (surplus < 0){
-            redisService.setValue(cacheKey ,0);
+        if (surplus < 0) {
+            redisService.setValue(cacheKey, 0);
             return false;
         }
         String lockKey = cacheKey + Constants.UNDERLINE + surplus;
@@ -281,7 +286,7 @@ public class StrategyRepository implements IStrategyRepository {
         } else {
             lock = redisService.setNx(lockKey);
         }
-        if (!lock){
+        if (!lock) {
             log.info("策略奖品 库存获取锁失败 {}", lockKey);
         }
         return lock;

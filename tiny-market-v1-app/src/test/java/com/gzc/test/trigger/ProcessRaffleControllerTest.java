@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RaffleActivityControllerTest {
+public class ProcessRaffleControllerTest {
 
     @Resource
     private IProcessRaffleController processRaffleService;
@@ -28,7 +28,7 @@ public class RaffleActivityControllerTest {
     public void test_draw() {
         ActivityDrawRequestDTO request = new ActivityDrawRequestDTO();
         request.setActivityId(100301L);
-        request.setUserId("xiaofuge");
+        request.setUserId("chander");
         Response<ActivityDrawResponseDTO> response = processRaffleService.draw(request);
 
         log.info("请求参数：{}", JSON.toJSONString(request));
