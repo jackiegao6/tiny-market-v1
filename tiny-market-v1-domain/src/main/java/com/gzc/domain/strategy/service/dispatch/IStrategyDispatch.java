@@ -1,5 +1,7 @@
 package com.gzc.domain.strategy.service.dispatch;
 
+import java.util.Date;
+
 public interface IStrategyDispatch {
 
     /**
@@ -15,5 +17,5 @@ public interface IStrategyDispatch {
     /**
      * 根据策略id 和 奖品id扣减奖品缓存库存
      */
-    Boolean subtractionAwardStock(Long strategyId, Integer awardId);
+    Boolean subtractionAwardStock(Long strategyId, Integer awardId, Date endDateTime);
 }

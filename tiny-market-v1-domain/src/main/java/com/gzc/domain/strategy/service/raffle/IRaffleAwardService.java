@@ -4,7 +4,7 @@ import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 
 import java.util.List;
 
-public interface IRaffleAward {
+public interface IRaffleAwardService {
 
     /**
      * 根据策略ID查询抽奖奖品列表配置

@@ -16,10 +16,7 @@ import org.redisson.api.RDelayedQueue;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.gzc.types.enums.ResponseCode.UN_ASSEMBLED_STRATEGY_ARMORY;
@@ -266,13 +263,24 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public Boolean subtractionAwardStock(String cacheKey, Integer awardId) {
+        return subtractionAwardStock(cacheKey, awardId, null);
+    }
+
+    @Override
+    public Boolean subtractionAwardStock(String cacheKey, Integer awardId, Date endDateTime) {
         long surplus = redisService.decr(cacheKey);
         if (surplus < 0){
             redisService.setValue(cacheKey ,0);
             return false;
         }
         String lockKey = cacheKey + Constants.UNDERLINE + surplus;
-        Boolean lock = redisService.setNx(lockKey);
+        Boolean lock = false;
+        if (null != endDateTime) {
+            long expireMillis = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+            lock = redisService.setNx(lockKey, expireMillis, TimeUnit.MILLISECONDS);
+        } else {
+            lock = redisService.setNx(lockKey);
+        }
         if (!lock){
             log.info("策略奖品 库存获取锁失败 {}", lockKey);
         }

@@ -458,6 +458,7 @@ public class ActivityRepository implements IActivityRepository {
         raffleActivityAccountDay.setActivityId(activityId);
         raffleActivityAccountDay.setUserId(userId);
         raffleActivityAccountDay.setDay(RaffleActivityAccountDay.currentDay());
+        // dayPartakeCount 当日已抽的次数
         Integer dayPartakeCount = raffleActivityAccountDayDao.queryRaffleActivityAccountDayPartakeCount(raffleActivityAccountDay);
         // 当日未参与抽奖则为0次
         return null == dayPartakeCount ? 0 : dayPartakeCount;

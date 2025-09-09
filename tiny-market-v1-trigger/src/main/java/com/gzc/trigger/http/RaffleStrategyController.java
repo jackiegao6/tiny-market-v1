@@ -12,7 +12,7 @@ import com.gzc.domain.strategy.model.entity.RaffleAwardEntity;
 import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
-import com.gzc.domain.strategy.service.raffle.IRaffleAward;
+import com.gzc.domain.strategy.service.raffle.IRaffleAwardService;
 import com.gzc.domain.strategy.service.raffle.IRaffleRule;
 import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
 import com.gzc.types.enums.ResponseCode;
@@ -35,7 +35,7 @@ public class RaffleStrategyController implements IRaffleService {
     @Resource
     private IStrategyArmory strategyArmory;
     @Resource
-    private IRaffleAward raffleAward;
+    private IRaffleAwardService raffleAwardService;
     @Resource
     private IRaffleStrategy raffleStrategy;
     @Resource
@@ -73,7 +73,7 @@ public class RaffleStrategyController implements IRaffleService {
         }
         try {
             // 2. 查询策略的奖品配置
-            List<StrategyAwardEntity> strategyAwardEntities = raffleAward.queryRaffleStrategyAwardListByActivityId(activityId);
+            List<StrategyAwardEntity> strategyAwardEntities = raffleAwardService.queryRaffleStrategyAwardListByActivityId(activityId);
 
             // 3. 获取有规则的奖品的 规则配置
             String[] treeIds = strategyAwardEntities.stream().map(StrategyAwardEntity::getRuleModels)

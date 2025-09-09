@@ -99,6 +99,7 @@ public class RafflePartakeService extends AbstractRafflePartake{
         userRaffleOrder.setOrderId(RandomStringUtils.randomNumeric(12));
         userRaffleOrder.setOrderTime(currentDate);
         userRaffleOrder.setOrderState(UserRaffleOrderStateVO.create);
+        userRaffleOrder.setEndDateTime(activityEntity.getEndDateTime());
         return userRaffleOrder;
     }
 }

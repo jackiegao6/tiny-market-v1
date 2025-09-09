@@ -10,7 +10,7 @@ import com.gzc.api.response.Response;
 import java.util.List;
 
 /**
- * @description 抽奖服务接口
+ * @description 抽奖服务支持接口
  */
 public interface IRaffleService {
 
@@ -25,7 +25,7 @@ public interface IRaffleService {
     /**
      * 查询抽奖奖品列表配置
      *
-     * @param requestDTO 抽奖奖品列表查询请求参数
+     * @param requestDTO 用户id、活动id
      * @return 奖品列表数据
      */
     Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(RaffleAwardListRequestDTO requestDTO);
