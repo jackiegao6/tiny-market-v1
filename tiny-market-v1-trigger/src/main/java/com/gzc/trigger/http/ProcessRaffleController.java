@@ -1,6 +1,6 @@
 package com.gzc.trigger.http;
 
-import com.gzc.api.IRaffleActivityService;
+import com.gzc.api.IProcessRaffleController;
 import com.gzc.api.dto.ActivityDrawRequestDTO;
 import com.gzc.api.dto.ActivityDrawResponseDTO;
 import com.gzc.api.response.Response;
@@ -32,7 +32,7 @@ import java.util.Date;
 @RestController()
 @CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
-public class RaffleActivityController implements IRaffleActivityService {
+public class ProcessRaffleController implements IProcessRaffleController {
 
     @Resource
     private IRafflePartake raffleActivityPartakeService;
@@ -44,40 +44,6 @@ public class RaffleActivityController implements IRaffleActivityService {
     private IActivityArmory activityArmory;
     @Resource
     private IStrategyArmory strategyArmory;
-
-    /**
-     * 活动装配 - 数据预热 | 把活动配置的对应的 sku 一起装配
-     *
-     * @param activityId 活动ID
-     * @return 装配结果
-     * <p>
-     * 接口：<a href="http://localhost:8091/api/v1/raffle/activity/armory">/api/v1/raffle/activity/armory</a>
-     * 入参：{"activityId":100001,"userId":"xiaofuge"}
-     *
-     * curl --request GET \
-     *   --url 'http://localhost:8091/api/v1/raffle/activity/armory?activityId=100301'
-     */
-    @RequestMapping(value = "/armory", method = RequestMethod.GET)
-    @Override
-    public Response<Boolean> armory(@RequestParam Long activityId) {
-        try {
-            // 1. 活动装配
-            activityArmory.assembleActivitySkuByActivityId(activityId);
-            // 2. 策略装配
-            strategyArmory.assembleLotteryStrategyByActivityId(activityId);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(true)
-                    .build();
-        } catch (Exception e) {
-            log.error("活动装配，数据预热，失败 activityId:{}", activityId, e);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .build();
-        }
-    }
 
     /**
      * 抽奖接口

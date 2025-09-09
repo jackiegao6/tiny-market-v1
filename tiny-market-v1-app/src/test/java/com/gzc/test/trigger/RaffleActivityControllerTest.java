@@ -1,7 +1,7 @@
 package com.gzc.test.trigger;
 
 import com.alibaba.fastjson.JSON;
-import com.gzc.api.IRaffleActivityService;
+import com.gzc.api.IProcessRaffleController;
 import com.gzc.api.dto.ActivityDrawRequestDTO;
 import com.gzc.api.dto.ActivityDrawResponseDTO;
 import com.gzc.api.response.Response;
@@ -22,20 +22,14 @@ import javax.annotation.Resource;
 public class RaffleActivityControllerTest {
 
     @Resource
-    private IRaffleActivityService raffleActivityService;
-
-    @Test
-    public void test_armory() {
-        Response<Boolean> response = raffleActivityService.armory(100301L);
-        log.info("测试结果：{}", JSON.toJSONString(response));
-    }
+    private IProcessRaffleController processRaffleService;
 
     @Test
     public void test_draw() {
         ActivityDrawRequestDTO request = new ActivityDrawRequestDTO();
         request.setActivityId(100301L);
         request.setUserId("xiaofuge");
-        Response<ActivityDrawResponseDTO> response = raffleActivityService.draw(request);
+        Response<ActivityDrawResponseDTO> response = processRaffleService.draw(request);
 
         log.info("请求参数：{}", JSON.toJSONString(request));
         log.info("测试结果：{}", JSON.toJSONString(response));

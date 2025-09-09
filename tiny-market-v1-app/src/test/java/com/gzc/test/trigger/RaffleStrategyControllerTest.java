@@ -1,7 +1,7 @@
 package com.gzc.test.trigger;
 
 import com.alibaba.fastjson.JSON;
-import com.gzc.api.IRaffleService;
+import com.gzc.api.IBeforeRaffleController;
 import com.gzc.api.dto.RaffleAwardListRequestDTO;
 import com.gzc.api.dto.RaffleAwardListResponseDTO;
 import com.gzc.api.response.Response;
@@ -23,16 +23,22 @@ import java.util.List;
 public class RaffleStrategyControllerTest {
 
     @Resource
-    private IRaffleService raffleStrategyService;
+    private IBeforeRaffleController beforeRaffleService;
 
     @Test
     public void test_queryRaffleAwardList() {
         RaffleAwardListRequestDTO request = new RaffleAwardListRequestDTO();
         request.setUserId("gzc");
         request.setActivityId(100301L);
-        Response<List<RaffleAwardListResponseDTO>> response = raffleStrategyService.queryRaffleAwardList(request);
+        Response<List<RaffleAwardListResponseDTO>> response = beforeRaffleService.queryRaffleAwardList(request);
 
         log.info("请求参数：{}", JSON.toJSONString(request));
+        log.info("测试结果：{}", JSON.toJSONString(response));
+    }
+
+    @Test
+    public void test_armory() {
+        Response<Boolean> response = beforeRaffleService.armory(100301L);
         log.info("测试结果：{}", JSON.toJSONString(response));
     }
 

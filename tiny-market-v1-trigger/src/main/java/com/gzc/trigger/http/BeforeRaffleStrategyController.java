@@ -1,13 +1,14 @@
 package com.gzc.trigger.http;
 
 import com.alibaba.fastjson.JSON;
-import com.gzc.api.IRaffleService;
+import com.gzc.api.IBeforeRaffleController;
 import com.gzc.api.dto.RaffleAwardListRequestDTO;
 import com.gzc.api.dto.RaffleAwardListResponseDTO;
 import com.gzc.api.dto.RaffleRequestDTO;
 import com.gzc.api.dto.RaffleResponseDTO;
 import com.gzc.api.response.Response;
 import com.gzc.domain.activity.service.IRaffleOrder;
+import com.gzc.domain.activity.service.armory.IActivityArmory;
 import com.gzc.domain.strategy.model.entity.RaffleAwardEntity;
 import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
@@ -30,8 +31,10 @@ import java.util.Map;
 @RestController
 @CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/strategy")
-public class RaffleStrategyController implements IRaffleService {
+public class BeforeRaffleStrategyController implements IBeforeRaffleController {
 
+    @Resource
+    private IActivityArmory activityArmory;
     @Resource
     private IStrategyArmory strategyArmory;
     @Resource
@@ -40,21 +43,34 @@ public class RaffleStrategyController implements IRaffleService {
     private IRaffleStrategy raffleStrategy;
     @Resource
     private IRaffleRule raffleRule;
-    @Resource
-    private IRaffleOrder raffleOrder;
 
-    @RequestMapping(value = "/strategy_armory", method = RequestMethod.GET)
+    /**
+     * 活动装配 - 数据预热 | 把活动配置的对应的 sku 一起装配
+     *
+     * @param activityId 活动ID
+     * @return 装配结果
+     * <p>
+     * 接口：<a href="http://localhost:8091/api/v1/raffle/activity/armory">/api/v1/raffle/activity/armory</a>
+     * 入参：{"activityId":100001,"userId":"xiaofuge"}
+     *
+     * curl --request GET \
+     *   --url 'http://localhost:8091/api/v1/raffle/activity/armory?activityId=100301'
+     */
+    @RequestMapping(value = "/armory", method = RequestMethod.GET)
     @Override
-    public Response<Boolean> strategyArmory(@RequestParam Long strategyId) {
+    public Response<Boolean> armory(@RequestParam Long activityId) {
         try {
-            boolean armoryStatus = strategyArmory.assembleLotteryStrategy(strategyId);
+            // 1. 活动装配 活动本身的信息 活动总次数的统计量 活动涉及的sku的库存
+            activityArmory.assembleActivitySkuByActivityId(activityId);
+            // 2. 策略装配 该策略涉及到的奖品列表信息 各个奖品的库存 该策略包含的奖品数量 该策略生成的用于抽奖的哈希表
+            strategyArmory.assembleLotteryStrategyByActivityId(activityId);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())
-                    .data(armoryStatus)
+                    .data(true)
                     .build();
         } catch (Exception e) {
-            log.error("抽奖策略装配失败 strategyId：{}", strategyId, e);
+            log.error("活动装配，数据预热，失败 activityId:{}", activityId, e);
             return Response.<Boolean>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
@@ -119,6 +135,31 @@ public class RaffleStrategyController implements IRaffleService {
         }
     }
 
+    @Resource
+    private IRaffleOrder raffleOrder;
+    // todo
+
+    @RequestMapping(value = "/strategy_armory", method = RequestMethod.GET)
+    @Override
+    public Response<Boolean> strategyArmory(@RequestParam Long strategyId) {
+        try {
+            boolean armoryStatus = strategyArmory.assembleLotteryStrategy(strategyId);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(armoryStatus)
+                    .build();
+        } catch (Exception e) {
+            log.error("抽奖策略装配失败 strategyId：{}", strategyId, e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+
+    // todo
     @RequestMapping(value = "/random_raffle", method = RequestMethod.POST)
     @Override
     public Response<RaffleResponseDTO> randomRaffle(@RequestBody RaffleRequestDTO requestDTO) {

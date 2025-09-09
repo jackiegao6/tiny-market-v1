@@ -31,11 +31,14 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
 
     @Override
     public boolean assembleLotteryStrategyByActivityId(Long activityId) {
+        // 根据活动id 找到 1v1 的策略id
         Long strategyId = repository.queryStrategyIdByActivityId(activityId);
-
         return assembleLotteryStrategy(strategyId);
     }
 
+    /**
+     * 装配策略相关的信息
+     */
     @Override
     public boolean assembleLotteryStrategy(Long strategyId) {
         // 1. 查询策略配置
@@ -67,11 +70,15 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         return true;
     }
 
+    /**
+     * 生成概率查找表、奖品个数、各奖品的库存信息 并放入redis中
+     */
     private void assembleLotteryStrategy(String armoryAwardsKey, List<StrategyAwardEntity> strategyAwardEntities){
         // 1. 如果已经装配 就return
         if(repository.hasStrategyAwardSearchRateTable(armoryAwardsKey)){
             return;
         }
+        // 把各个奖品的库存缓存起来
         assembleLotteryAward(armoryAwardsKey, strategyAwardEntities);
         // 2. 获取最小概率值
         BigDecimal minAwardRate = strategyAwardEntities.stream()
@@ -111,6 +118,9 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         repository.storeStrategyAwardSearchRateTable(armoryAwardsKey, shuffleStrategyAwardSearchRateTable.size(), shuffleStrategyAwardSearchRateTable);
     }
 
+    /**
+     * 把各个奖品的库存缓存起来
+     */
     private void assembleLotteryAward(String armoryAwardsKey, List<StrategyAwardEntity> strategyAwardEntities) {
 
         for (StrategyAwardEntity entity : strategyAwardEntities) {
