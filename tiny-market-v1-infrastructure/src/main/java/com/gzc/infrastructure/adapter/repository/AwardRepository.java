@@ -8,8 +8,10 @@ import com.gzc.domain.award.model.entity.TaskEntity;
 import com.gzc.domain.award.model.entity.UserAwardRecordEntity;
 import com.gzc.infrastructure.dao.ITaskDao;
 import com.gzc.infrastructure.dao.IUserAwardRecordDao;
+import com.gzc.infrastructure.dao.IUserRaffleOrderDao;
 import com.gzc.infrastructure.dao.po.Task;
 import com.gzc.infrastructure.dao.po.UserAwardRecord;
+import com.gzc.infrastructure.dao.po.UserRaffleOrder;
 import com.gzc.infrastructure.event.EventPublisher;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
@@ -30,6 +32,7 @@ public class AwardRepository implements IAwardRepository {
     private final IDBRouterStrategy dbRouter;
     private final TransactionTemplate transactionTemplate;
     private final EventPublisher eventPublisher;
+    private final IUserRaffleOrderDao userRaffleOrderDao;
 
     @Override
     public void saveUserAwardRecord(UserAwardRecordAggregate aggregate) {
@@ -55,12 +58,21 @@ public class AwardRepository implements IAwardRepository {
                 .state(taskEntity.getState().getCode())
                 .build();
 
+        UserRaffleOrder userRaffleOrder = new UserRaffleOrder();
+        userRaffleOrder.setUserId(userAwardRecordEntity.getUserId());
+        userRaffleOrder.setOrderId(userAwardRecordEntity.getOrderId());
+
         try {
             dbRouter.doRouter(userAwardRecordEntity.getUserId());
             transactionTemplate.execute(status -> {
                 try {
                     userAwardRecordDao.insert(record);
                     taskDao.insert(task);
+                    int res = userRaffleOrderDao.updateUserRaffleOrderStateUsed(userRaffleOrder);
+                    if (res != 1){
+                        status.setRollbackOnly();
+                        throw new AppException(ResponseCode.ACTIVITY_ORDER_ERROR.getCode(), ResponseCode.ACTIVITY_ORDER_ERROR.getInfo());
+                    }
                     return 1;
                 } catch (DuplicateKeyException e) {
                     status.setRollbackOnly();

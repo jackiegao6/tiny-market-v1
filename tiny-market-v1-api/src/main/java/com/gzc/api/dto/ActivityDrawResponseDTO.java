@@ -1,25 +1,23 @@
-package com.gzc.domain.strategy.model.entity;
-
-
+package com.gzc.api.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @description 抽奖奖品实体
+ * @description
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RaffleAwardEntity {
+public class ActivityDrawResponseDTO {
 
-    /** 奖品ID */
+    // 奖品ID
     private Integer awardId;
-    /** 奖品配置信息 */
-    private String awardConfig;
+    // 奖品标题
     private String awardTitle;
-    private Integer sort;
+    // 排序编号【策略奖品配置的奖品顺序编号】
+    private Integer awardIndex;
 
 }

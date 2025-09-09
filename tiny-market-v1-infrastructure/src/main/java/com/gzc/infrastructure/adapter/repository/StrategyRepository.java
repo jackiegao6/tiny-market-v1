@@ -32,6 +32,8 @@ import static com.gzc.types.enums.ResponseCode.UN_ASSEMBLED_STRATEGY_ARMORY;
 public class StrategyRepository implements IStrategyRepository {
 
     @Resource
+    private IRaffleActivityDao raffleActivityDao;
+    @Resource
     private IStrategyAwardDao strategyAwardDao;
     @Resource
     private IRedisService redisService;
@@ -299,5 +301,10 @@ public class StrategyRepository implements IStrategyRepository {
         strategyAward.setAwardId(awardId);
 
         strategyAwardDao.updateStrategyAwardStock(strategyAward);
+    }
+
+    @Override
+    public Long queryStrategyIdByActivityId(Long activityId) {
+        return raffleActivityDao.queryStrategyIdByActivityId(activityId);
     }
 }

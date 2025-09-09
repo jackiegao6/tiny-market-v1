@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @CrossOrigin("${app.config.cross-origin}")
-@RequestMapping("/api/${app.config.api-version}/raffle")
+@RequestMapping("/api/${app.config.api-version}/raffle/strategy")
 public class RaffleController implements IRaffleService {
 
     @Resource
