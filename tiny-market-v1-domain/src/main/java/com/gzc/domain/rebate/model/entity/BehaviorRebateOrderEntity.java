@@ -1,17 +1,16 @@
-package com.gzc.infrastructure.dao.po;
+package com.gzc.domain.rebate.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-/**
- * @description 用户行为返利流水订单表 持久化对象
- */
 @Data
-public class UserBehaviorRebateOrder {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class BehaviorRebateOrderEntity {
 
-    /** 自增ID */
-    private Long id;
     /** 用户ID */
     private String userId;
     /** 订单ID */
@@ -24,13 +23,7 @@ public class UserBehaviorRebateOrder {
     private String rebateType;
     /** 返利配置【sku值，积分值】 */
     private String rebateConfig;
-    /** 业务仿重ID - 外部透传，方便查询使用 */
-    private String outBusinessNo;
     /** 业务ID - 拼接的唯一值 */
     private String bizId;
-    /** 创建时间 */
-    private Date createTime;
-    /** 更新时间 */
-    private Date updateTime;
 
 }
