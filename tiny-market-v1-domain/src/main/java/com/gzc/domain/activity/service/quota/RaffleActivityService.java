@@ -52,8 +52,8 @@ public class RaffleActivityService extends AbstractRaffleActivity implements ISk
     }
 
     @Override
-    protected void doSaveOrder(CreateOrderAggregate createOrderAggregate) {
-        activityRepository.doSaveOrder(createOrderAggregate);
+    protected void doSaveSkuRechargeOrder(CreateOrderAggregate createOrderAggregate) {
+        activityRepository.doSaveSkuRechargeOrder(createOrderAggregate);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.gzc.test.domain.activity;
 
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
-import com.gzc.domain.activity.service.IRaffleOrder;
+import com.gzc.domain.activity.service.IRaffleQuota;
 import com.gzc.domain.activity.service.armory.IActivityArmory;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 public class RaffleOrderTest {
 
     @Resource
-    private IRaffleOrder raffleOrder;
+    private IRaffleQuota raffleQuota;
     @Resource
     private IActivityArmory activityArmory;
 
@@ -38,7 +38,7 @@ public class RaffleOrderTest {
         skuRechargeEntity.setSku(9011L);
         // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
         skuRechargeEntity.setOutBusinessNo(RandomStringUtils.randomNumeric(12));
-        String orderId = raffleOrder.createSkuRechargeOrder(skuRechargeEntity);
+        String orderId = raffleQuota.createSkuRechargeOrder(skuRechargeEntity);
         log.info("测试结果：{}", orderId);
     }
 
@@ -57,7 +57,7 @@ public class RaffleOrderTest {
                 skuRechargeEntity.setSku(9011L);
                 // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
                 skuRechargeEntity.setOutBusinessNo(RandomStringUtils.randomNumeric(12));
-                String orderId = raffleOrder.createSkuRechargeOrder(skuRechargeEntity);
+                String orderId = raffleQuota.createSkuRechargeOrder(skuRechargeEntity);
                 log.info("测试结果：订单id为 {}", orderId);
             } catch (AppException e) {
                 log.warn(e.getInfo());

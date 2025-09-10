@@ -5,6 +5,7 @@ import com.gzc.domain.activity.adapter.repository.IActivityRepository;
 import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.activity.model.entity.*;
 import com.gzc.domain.activity.service.IRaffleOrder;
+import com.gzc.domain.activity.service.IRaffleQuota;
 import com.gzc.domain.activity.service.quota.rule.IActionChain;
 import com.gzc.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import com.gzc.types.enums.ResponseCode;
@@ -16,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
  * @description 抽奖活动抽象类，定义标准的流程
  */
 @Slf4j
-public abstract class AbstractRaffleActivity implements IRaffleOrder {
+public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuota {
 
     protected IActivityRepository activityRepository;
     protected DefaultActivityChainFactory defaultActivityChainFactory;
@@ -59,17 +60,20 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder {
         // 2.3 查询次数信息（用户在活动上可参与的次数）
         ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
 
+        // 3. 扣减活动库存
         IActionChain actionChain = defaultActivityChainFactory.openActionChain();
         actionChain.logic(activitySkuEntity, activityEntity, activityCountEntity);
 
+        // 4. 构建聚合对象
         CreateOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
 
-        doSaveOrder(createOrderAggregate);
+        // 5. 增加用户额度
+        doSaveSkuRechargeOrder(createOrderAggregate);
 
         return createOrderAggregate.getActivityOrderEntity().getOrderId();
     }
 
     protected abstract CreateOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);
 
-    protected abstract void doSaveOrder(CreateOrderAggregate createOrderAggregate);
+    protected abstract void doSaveSkuRechargeOrder(CreateOrderAggregate createOrderAggregate);
 }

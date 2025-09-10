@@ -52,7 +52,7 @@ public class RaffleActivityAccountDay {
      */
     private Date updateTime;
 
-    public static String currentDay() {
+    public String currentDay() {
         return dateFormatDay.format(new Date());
     }
 
