@@ -41,7 +41,8 @@ public class BehaviorRebateService implements IBehaviorRebateService{
         List<String> orderIds = new ArrayList<>();
         List<BehaviorRebateAggregate> behaviorRebateAggregates = new ArrayList<>();
         for (DailyBehaviorRebateVO dailyBehaviorRebateVO : dailyBehaviorRebateVOS) {
-            String bizId = userId + Constants.UNDERLINE + dailyBehaviorRebateVO.getRebateType() + Constants.UNDERLINE + behaviorEntity.getOutBusinessNo();
+            String outBusinessNo = behaviorEntity.getOutBusinessNo();
+            String bizId = userId + Constants.UNDERLINE + dailyBehaviorRebateVO.getRebateType() + Constants.UNDERLINE + outBusinessNo;
             String orderId = RandomStringUtils.randomNumeric(12);
             BehaviorRebateOrderEntity behaviorRebateOrderEntity = BehaviorRebateOrderEntity.builder()
                         .userId(userId)
@@ -50,6 +51,7 @@ public class BehaviorRebateService implements IBehaviorRebateService{
                         .rebateDesc(dailyBehaviorRebateVO.getRebateDesc())
                         .rebateType(dailyBehaviorRebateVO.getRebateType())
                         .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
+                        .outBusinessNo(outBusinessNo)
                         .bizId(bizId)
                         .build();
             orderIds.add(orderId);
@@ -84,5 +86,11 @@ public class BehaviorRebateService implements IBehaviorRebateService{
         behaviorRebateRepository.saveUserRebateRecord(userId, behaviorRebateAggregates);
 
         return orderIds;
+    }
+
+
+    @Override
+    public List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String userId, String outBusinessNo) {
+        return behaviorRebateRepository.queryOrderByOutBusinessNo(userId, outBusinessNo);
     }
 }

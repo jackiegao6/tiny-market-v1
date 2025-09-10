@@ -97,7 +97,7 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
                     .toArray(String[]::new);
 
             // 4. 从 strategy_tree_node 表中 在规则模型名字中过滤次数规则 再查询 次数规则值
-            Map<String, Integer> lockCountMap = raffleRule.queryAwardRuleLockCount(treeIds);
+            Map<String, Integer> lockCountMap = raffleRule.queryTreeLockCount(treeIds);
 
             // 5. 从 raffle_activity_account_day 表中 获取用户今日的参与量
             Integer dayPartakeCount = raffleOrder.queryRaffleActivityAccountDayPartakeCount(activityId, requestDTO.getUserId());

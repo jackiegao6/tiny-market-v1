@@ -1,6 +1,9 @@
 package com.gzc.infrastructure.dao.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -8,6 +11,9 @@ import java.util.Date;
  * @description 用户行为返利流水订单表 持久化对象
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserBehaviorRebateOrder {
 
     /** 自增ID */

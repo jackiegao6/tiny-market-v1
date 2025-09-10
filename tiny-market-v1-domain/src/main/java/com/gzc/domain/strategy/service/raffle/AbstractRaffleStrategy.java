@@ -22,13 +22,13 @@ import java.util.Date;
 @Slf4j
 public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
 
-    protected final IStrategyRepository repository;
+    protected final IStrategyRepository strategyRepository;
     protected final IStrategyDispatch strategyDispatch;
     protected final DefaultChainFactory defaultChainFactory;
     protected final DefaultTreeFactory defaultTreeFactory;
 
     public AbstractRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch, DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
-        this.repository = repository;
+        this.strategyRepository = repository;
         this.strategyDispatch = strategyDispatch;
         this.defaultChainFactory = defaultChainFactory;
         this.defaultTreeFactory = defaultTreeFactory;
@@ -62,7 +62,7 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
     }
 
     private RaffleAwardEntity buildRaffleAwardEntity(Long strategyId, Integer awardId, String awardConfig) {
-        StrategyAwardEntity strategyAward = repository.queryStrategyAwardEntity(strategyId, awardId);
+        StrategyAwardEntity strategyAward = strategyRepository.queryStrategyAwardEntity(strategyId, awardId);
         return RaffleAwardEntity.builder()
                 .awardId(awardId)
                 .awardConfig(awardConfig)

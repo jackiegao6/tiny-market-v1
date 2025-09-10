@@ -18,6 +18,7 @@ public class Constants {
         public static String STRATEGY_AWARD_COUNT_KEY = "big_market_strategy:award_count_key:";
         public static String STRATEGY_AWARD_COUNT_CONSUME_Q = "big_market_strategy:award_consume_queue:";
         public static String ACTIVITY_KEY = "big_market_activity:activity_info_key:";
+        public static String STRATEGY_RULE_WEIGHT_KEY = "strategy_rule_weight_key:";
         public static String ACTIVITY_SKU_KEY = "big_market_activity:sku_key:";
         public static String ACTIVITY_COUNT_KEY = "big_market_activity:count_key:";
         public static String ACTIVITY_SKU_COUNT_QUERY_KEY = "big_market_activity:activity_sku:count_query_key:";

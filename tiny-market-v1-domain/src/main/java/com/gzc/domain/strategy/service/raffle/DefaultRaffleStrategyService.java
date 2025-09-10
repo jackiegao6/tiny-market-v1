@@ -3,6 +3,7 @@ package com.gzc.domain.strategy.service.raffle;
 import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
+import com.gzc.domain.strategy.model.valobj.RuleWeightVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
@@ -36,13 +37,13 @@ public class DefaultRaffleStrategyService extends AbstractRaffleStrategy impleme
 
     @Override
     public DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Integer awardId, Long strategyId, Date endDateTime) {
-        StrategyAwardRuleModelVO strategyAwardRuleModelVO = repository.queryStrategyAwardRuleModelVO(strategyId, awardId);
+        StrategyAwardRuleModelVO strategyAwardRuleModelVO = strategyRepository.queryStrategyAwardRuleModelVO(strategyId, awardId);
         if (null == strategyAwardRuleModelVO) {
             return DefaultTreeFactory.StrategyAwardVO.builder()
                     .awardId(awardId)
                     .build();
         }
-        RuleTreeVO ruleTreeVO = repository.queryRuleTreeVOByTreeId(strategyAwardRuleModelVO.getRuleModels());
+        RuleTreeVO ruleTreeVO = strategyRepository.queryRuleTreeVOByTreeId(strategyAwardRuleModelVO.getRuleModels());
         if (null == ruleTreeVO) {
             throw new RuntimeException("存在抽奖策略配置的规则模型 Key，未在库表 rule_tree、rule_tree_node、rule_tree_line 配置对应的规则树信息 " + strategyAwardRuleModelVO.getRuleModels());
         }
@@ -57,26 +58,37 @@ public class DefaultRaffleStrategyService extends AbstractRaffleStrategy impleme
 
     @Override
     public StrategyAwardStockKeyVO takeQueueValue() {
-        return repository.takeQueueValue();
+        return strategyRepository.takeQueueValue();
     }
 
     @Override
     public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
-        repository.updateStrategyAwardStock(strategyId, awardId);
+        strategyRepository.updateStrategyAwardStock(strategyId, awardId);
     }
 
     @Override
     public List<StrategyAwardEntity> queryRaffleStrategyAwardList(Long strategyId) {
-        return repository.queryStrategyAwardList(strategyId);
+        return strategyRepository.queryStrategyAwardList(strategyId);
     }
     @Override
     public List<StrategyAwardEntity> queryRaffleStrategyAwardListByActivityId(Long activityId) {
-        Long strategyId = repository.queryStrategyIdByActivityId(activityId);
-        return repository.queryStrategyAwardList(strategyId);
+        Long strategyId = strategyRepository.queryStrategyIdByActivityId(activityId);
+        return strategyRepository.queryStrategyAwardList(strategyId);
     }
 
     @Override
-    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
-        return repository.queryAwardRuleLockCount(treeIds);
+    public Map<String, Integer> queryTreeLockCount(String[] treeIds) {
+        return strategyRepository.queryTreeLockCount(treeIds);
+    }
+
+    @Override
+    public List<RuleWeightVO> queryRuleWeightDetailsByActivityId(Long activityId) {
+        Long strategyId = strategyRepository.queryStrategyIdByActivityId(activityId);
+        return queryRuleWeightDetails(strategyId);
+    }
+
+    @Override
+    public List<RuleWeightVO> queryRuleWeightDetails(Long strategyId) {
+        return strategyRepository.queryRuleWeightDetails(strategyId);
     }
 }

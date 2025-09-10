@@ -1,5 +1,6 @@
 package com.gzc.domain.activity.service;
 
+import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
 
 public interface IRaffleQuota {
@@ -14,4 +15,9 @@ public interface IRaffleQuota {
      * @return 活动ID
      */
     String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+
+    ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId);
+
+    Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);
+
 }
