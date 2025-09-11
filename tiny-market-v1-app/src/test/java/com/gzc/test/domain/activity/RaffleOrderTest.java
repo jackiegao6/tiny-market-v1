@@ -1,7 +1,7 @@
 package com.gzc.test.domain.activity;
 
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
-import com.gzc.domain.activity.service.IRaffleQuota;
+import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.activity.service.armory.IActivityArmory;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 public class RaffleOrderTest {
 
     @Resource
-    private IRaffleQuota raffleQuota;
+    private IRaffleQuotaService raffleQuota;
     @Resource
     private IActivityArmory activityArmory;
 

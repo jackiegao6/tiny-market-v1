@@ -5,7 +5,7 @@ import com.gzc.domain.activity.adapter.repository.IActivityRepository;
 import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.activity.model.entity.*;
 import com.gzc.domain.activity.service.IRaffleOrder;
-import com.gzc.domain.activity.service.IRaffleQuota;
+import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.activity.service.quota.rule.IActionChain;
 import com.gzc.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import com.gzc.types.enums.ResponseCode;
@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
  * @description 抽奖活动抽象类，定义标准的流程
  */
 @Slf4j
-public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuota {
+public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuotaService {
 
     protected IActivityRepository activityRepository;
     protected DefaultActivityChainFactory defaultActivityChainFactory;

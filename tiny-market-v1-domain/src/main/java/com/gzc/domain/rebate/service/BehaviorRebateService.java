@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BehaviorRebateService implements IBehaviorRebateService{
+public class BehaviorRebateService implements IBehaviorRebateService {
 
     private final IBehaviorRebateRepository behaviorRebateRepository;
     private final SendRebateMessageEvent sendRebateMessageEvent;
@@ -31,11 +31,9 @@ public class BehaviorRebateService implements IBehaviorRebateService{
     public List<String> createRebateOrder(BehaviorEntity behaviorEntity) {
         String userId = behaviorEntity.getUserId();
 
-        // 1. 查询返利配置
+        // 1. 查询签到 返利配置
         List<DailyBehaviorRebateVO> dailyBehaviorRebateVOS = behaviorRebateRepository.queryDailyBehaviorRebateConfig(behaviorEntity.getBehaviorVO());
-        if (null == dailyBehaviorRebateVOS || dailyBehaviorRebateVOS.isEmpty()){
-            return new ArrayList<>();
-        }
+        if (null == dailyBehaviorRebateVOS || dailyBehaviorRebateVOS.isEmpty()) return new ArrayList<>();
 
         // 2. 构建聚合对象
         List<String> orderIds = new ArrayList<>();
@@ -45,15 +43,15 @@ public class BehaviorRebateService implements IBehaviorRebateService{
             String bizId = userId + Constants.UNDERLINE + dailyBehaviorRebateVO.getRebateType() + Constants.UNDERLINE + outBusinessNo;
             String orderId = RandomStringUtils.randomNumeric(12);
             BehaviorRebateOrderEntity behaviorRebateOrderEntity = BehaviorRebateOrderEntity.builder()
-                        .userId(userId)
-                        .orderId(orderId)
-                        .behaviorType(dailyBehaviorRebateVO.getBehaviorType())
-                        .rebateDesc(dailyBehaviorRebateVO.getRebateDesc())
-                        .rebateType(dailyBehaviorRebateVO.getRebateType())
-                        .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
-                        .outBusinessNo(outBusinessNo)
-                        .bizId(bizId)
-                        .build();
+                    .userId(userId)
+                    .orderId(orderId)
+                    .behaviorType(dailyBehaviorRebateVO.getBehaviorType())
+                    .rebateDesc(dailyBehaviorRebateVO.getRebateDesc())
+                    .rebateType(dailyBehaviorRebateVO.getRebateType())
+                    .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
+                    .outBusinessNo(outBusinessNo)
+                    .bizId(bizId)
+                    .build();
             orderIds.add(orderId);
 
             // MQ + 任务
@@ -66,18 +64,18 @@ public class BehaviorRebateService implements IBehaviorRebateService{
             BaseEvent.EventMessage<SendRebateMessageEvent.RebateMessage> rebateMessageEventMessage = sendRebateMessageEvent.buildEventMessage(messageBody);
 
             BehaviorRebateTaskEntity behaviorRebateTaskEntity = BehaviorRebateTaskEntity.builder()
-                        .userId(userId)
-                        .topic(sendRebateMessageEvent.topic())
-                        .messageId(rebateMessageEventMessage.getId())
-                        .message(rebateMessageEventMessage)
-                        .taskStateVO(TaskStateVO.CREATE)
-                        .build();
+                    .userId(userId)
+                    .topic(sendRebateMessageEvent.topic())
+                    .messageId(rebateMessageEventMessage.getId())
+                    .message(rebateMessageEventMessage)
+                    .taskStateVO(TaskStateVO.CREATE)
+                    .build();
 
 
             BehaviorRebateAggregate behaviorRebateAggregate = BehaviorRebateAggregate.builder()
-                        .behaviorRebateOrderEntity(behaviorRebateOrderEntity)
-                        .behaviorRebateTaskEntity(behaviorRebateTaskEntity)
-                        .build();
+                    .behaviorRebateOrderEntity(behaviorRebateOrderEntity)
+                    .behaviorRebateTaskEntity(behaviorRebateTaskEntity)
+                    .build();
 
             behaviorRebateAggregates.add(behaviorRebateAggregate);
         }

@@ -3,7 +3,7 @@ package com.gzc.domain.activity.service;
 import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
 
-public interface IRaffleQuota {
+public interface IRaffleQuotaService {
 
     /**
      * 创建 sku 账户充值订单，给用户增加抽奖次数

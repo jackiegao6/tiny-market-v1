@@ -8,7 +8,7 @@ import com.gzc.api.dto.market.UserActivityAccountRequestDTO;
 import com.gzc.api.dto.market.UserActivityAccountResponseDTO;
 import com.gzc.api.response.Response;
 import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
-import com.gzc.domain.activity.service.IRaffleQuota;
+import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.rebate.model.entity.BehaviorEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import com.gzc.domain.rebate.model.valobj.BehaviorVO;
@@ -42,7 +42,7 @@ public class MarketController implements IMarketController {
     @Resource
     private IBehaviorRebateService behaviorRebateService;
     @Resource
-    private IRaffleQuota raffleQuota;
+    private IRaffleQuotaService raffleQuota;
     @Resource
     private IRaffleRule raffleRule;
 
