@@ -38,12 +38,12 @@ public class MarketControllerTest {
 
     @Test
     public void test_calenderSignRebate(){
-        marketController.calenderSignRebate("gzc");
+        marketController.calenderSignRebate("user003");
     }
 
     @Test
     public void test_isCalendarSignRebate() {
-        Response<Boolean> response = marketController.isUserCalenderSignRebate("gzc");
+        Response<Boolean> response = marketController.isUserCalenderSignRebate("user003");
         log.info("测试结果：{}", JSON.toJSONString(response));
     }
 

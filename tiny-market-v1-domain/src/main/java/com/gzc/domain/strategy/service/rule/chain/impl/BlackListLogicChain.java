@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component("rule_blacklist")
-public class BackListLogicChain extends AbstractLogicChain {
+public class BlackListLogicChain extends AbstractLogicChain {
 
     @Resource
     private IStrategyRepository repository;
@@ -40,6 +40,8 @@ public class BackListLogicChain extends AbstractLogicChain {
                 return DefaultChainFactory.StrategyAwardVO.builder()
                         .awardId(awardId)
                         .logicModel(ruleModel())
+                        // 可以配置到数据库中
+                        .awardRuleValue("0.01,1")
                         .build();
             }
         }

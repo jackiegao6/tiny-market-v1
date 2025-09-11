@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 用户奖品记录事件消息
- * @create 2024-04-06 09:43
  */
 @Component
 public class SendAwardMessageEvent extends BaseEvent<SendAwardMessageEvent.SendAwardMessage> {
@@ -45,6 +43,7 @@ public class SendAwardMessageEvent extends BaseEvent<SendAwardMessageEvent.SendA
          * 用户ID
          */
         private String userId;
+        private String orderId;
         /**
          * 奖品ID
          */
@@ -53,6 +52,7 @@ public class SendAwardMessageEvent extends BaseEvent<SendAwardMessageEvent.SendA
          * 奖品标题（名称）
          */
         private String awardTitle;
+        private String awardConfig;
     }
 
 }
