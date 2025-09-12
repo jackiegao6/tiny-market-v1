@@ -5,10 +5,12 @@ import com.gzc.api.IMarketController;
 import com.gzc.api.dto.market.*;
 import com.gzc.api.response.Response;
 import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
+import com.gzc.domain.activity.model.entity.SkuProductEntity;
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
 import com.gzc.domain.activity.model.entity.UnpaidActivityOrderEntity;
 import com.gzc.domain.activity.model.valobj.OrderTradeTypeVO;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
+import com.gzc.domain.activity.service.IRaffleSkuProductService;
 import com.gzc.domain.credit.model.entity.CreditTradeEntity;
 import com.gzc.domain.credit.model.valobj.TradeNameVO;
 import com.gzc.domain.credit.model.valobj.TradeTypeVO;
@@ -53,6 +55,8 @@ public class MarketController implements IMarketController {
     private IRaffleRule raffleRule;
     @Resource
     private ICreditAdjustService creditAdjustService;
+    @Resource
+    private IRaffleSkuProductService raffleActivitySkuProductService;
 
     @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
     @Override
@@ -226,7 +230,46 @@ public class MarketController implements IMarketController {
 
     @Override
     public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
-        return null;
+        try {
+            log.info("查询sku商品集合开始 activityId:{}", activityId);
+            // 1. 参数校验
+            if (null == activityId) {
+                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+            }
+            // 2. 查询商品&封装数据
+            List<SkuProductEntity> skuProductEntities = raffleActivitySkuProductService.querySkuProductEntityByActivityId(activityId);
+            List<SkuProductResponseDTO> skuProductResponseDTOS = new ArrayList<>(skuProductEntities.size());
+            for (SkuProductEntity skuProductEntity : skuProductEntities) {
+
+                SkuProductResponseDTO.ActivityCount activityCount = new SkuProductResponseDTO.ActivityCount();
+                activityCount.setTotalCount(skuProductEntity.getActivityCount().getTotalCount());
+                activityCount.setMonthCount(skuProductEntity.getActivityCount().getMonthCount());
+                activityCount.setDayCount(skuProductEntity.getActivityCount().getDayCount());
+
+                SkuProductResponseDTO skuProductResponseDTO = new SkuProductResponseDTO();
+                skuProductResponseDTO.setSku(skuProductEntity.getSku());
+                skuProductResponseDTO.setActivityId(skuProductEntity.getActivityId());
+                skuProductResponseDTO.setActivityCountId(skuProductEntity.getActivityCountId());
+                skuProductResponseDTO.setStockCount(skuProductEntity.getStockCount());
+                skuProductResponseDTO.setStockCountSurplus(skuProductEntity.getStockCountSurplus());
+                skuProductResponseDTO.setProductAmount(skuProductEntity.getProductAmount());
+                skuProductResponseDTO.setActivityCount(activityCount);
+                skuProductResponseDTOS.add(skuProductResponseDTO);
+            }
+
+            log.info("查询sku商品集合完成 activityId:{} skuProductResponseDTOS:{}", activityId, JSON.toJSONString(skuProductResponseDTOS));
+            return Response.<List<SkuProductResponseDTO>>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(skuProductResponseDTOS)
+                    .build();
+        } catch (Exception e) {
+            log.error("查询sku商品集合失败 activityId:{}", activityId, e);
+            return Response.<List<SkuProductResponseDTO>>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
     }
 
     @Override
