@@ -1,11 +1,9 @@
 package com.gzc.api;
 
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightRequestDTO;
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightResponseDTO;
-import com.gzc.api.dto.market.UserActivityAccountRequestDTO;
-import com.gzc.api.dto.market.UserActivityAccountResponseDTO;
+import com.gzc.api.dto.market.*;
 import com.gzc.api.response.Response;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface IMarketController {
@@ -17,4 +15,10 @@ public interface IMarketController {
     Response<UserActivityAccountResponseDTO> queryUserActivityAccount(UserActivityAccountRequestDTO requestDTO);
 
     Response<List<RaffleStrategyRuleWeightResponseDTO>> queryUserRuleWeight(RaffleStrategyRuleWeightRequestDTO requestDTO);
+
+    Response<BigDecimal> queryCreditAccount(String userId);
+
+    Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId);
+
+    Response<Boolean> creditExchangeSku(SkuProductShopCartRequestDTO requestDTO);
 }

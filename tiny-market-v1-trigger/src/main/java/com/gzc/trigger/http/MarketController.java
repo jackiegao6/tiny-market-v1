@@ -2,13 +2,17 @@ package com.gzc.trigger.http;
 
 import com.alibaba.fastjson.JSON;
 import com.gzc.api.IMarketController;
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightRequestDTO;
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightResponseDTO;
-import com.gzc.api.dto.market.UserActivityAccountRequestDTO;
-import com.gzc.api.dto.market.UserActivityAccountResponseDTO;
+import com.gzc.api.dto.market.*;
 import com.gzc.api.response.Response;
 import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
+import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
+import com.gzc.domain.activity.model.entity.UnpaidActivityOrderEntity;
+import com.gzc.domain.activity.model.valobj.OrderTradeTypeVO;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
+import com.gzc.domain.credit.model.entity.CreditTradeEntity;
+import com.gzc.domain.credit.model.valobj.TradeNameVO;
+import com.gzc.domain.credit.model.valobj.TradeTypeVO;
+import com.gzc.domain.credit.service.ICreditAdjustService;
 import com.gzc.domain.rebate.model.entity.BehaviorEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import com.gzc.domain.rebate.model.valobj.BehaviorVO;
@@ -18,6 +22,7 @@ import com.gzc.domain.strategy.service.raffle.IRaffleRule;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,9 +48,11 @@ public class MarketController implements IMarketController {
     @Resource
     private IBehaviorRebateService behaviorRebateService;
     @Resource
-    private IRaffleQuotaService raffleQuota;
+    private IRaffleQuotaService raffleQuotaService;
     @Resource
     private IRaffleRule raffleRule;
+    @Resource
+    private ICreditAdjustService creditAdjustService;
 
     @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
     @Override
@@ -52,10 +60,10 @@ public class MarketController implements IMarketController {
 
         try {
             BehaviorEntity behaviorEntity = BehaviorEntity.builder()
-                        .userId(userId)
-                        .behaviorVO(BehaviorVO.SIGN)
-                        .outBusinessNo(dateFormatDay.format(new Date()))
-                        .build();
+                    .userId(userId)
+                    .behaviorVO(BehaviorVO.SIGN)
+                    .outBusinessNo(dateFormatDay.format(new Date()))
+                    .build();
             behaviorRebateService.createRebateOrder(behaviorEntity);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
@@ -106,7 +114,6 @@ public class MarketController implements IMarketController {
     }
 
 
-
     /**
      * 查询账户额度
      * <p>
@@ -128,7 +135,7 @@ public class MarketController implements IMarketController {
             if (StringUtils.isBlank(userId) || null == activityId) {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
             }
-            ActivityAccountEntity activityAccountEntity = raffleQuota.queryActivityAccountEntity(activityId, userId);
+            ActivityAccountEntity activityAccountEntity = raffleQuotaService.queryActivityAccountEntity(activityId, userId);
             UserActivityAccountResponseDTO userActivityAccountResponseDTO = UserActivityAccountResponseDTO.builder()
                     .totalCount(activityAccountEntity.getTotalCount())
                     .totalCountSurplus(activityAccountEntity.getTotalCountSurplus())
@@ -152,7 +159,6 @@ public class MarketController implements IMarketController {
     }
 
 
-
     /**
      * &#x67E5;&#x8BE2;&#x62BD;&#x5956;&#x7B56;&#x7565;&#x6743;&#x91CD;&#x89C4;&#x5219;&#x914D;&#x7F6E;
      * curl --request POST \
@@ -163,7 +169,6 @@ public class MarketController implements IMarketController {
      * "activityId": 100301
      * }'
      */
-
     @RequestMapping(value = "/query_raffle_strategy_rule_weight", method = RequestMethod.POST)
     @Override
     public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryUserRuleWeight(RaffleStrategyRuleWeightRequestDTO request) {
@@ -175,7 +180,7 @@ public class MarketController implements IMarketController {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
             }
             // 2. 查询用户抽奖总次数
-            Integer userTotalCount = raffleQuota.queryRaffleActivityAccountPartakeCount(activityId, userId);
+            Integer userTotalCount = raffleQuotaService.queryRaffleActivityAccountPartakeCount(activityId, userId);
             // 3. 查询规则
             List<RaffleStrategyRuleWeightResponseDTO> raffleStrategyRuleWeightList = new ArrayList<>();
             List<RuleWeightVO> ruleWeightVOList = raffleRule.queryRuleWeightDetailsByActivityId(activityId);
@@ -209,6 +214,53 @@ public class MarketController implements IMarketController {
             return Response.<List<RaffleStrategyRuleWeightResponseDTO>>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+
+    @Override
+    public Response<BigDecimal> queryCreditAccount(String userId) {
+        return null;
+    }
+
+    @Override
+    public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
+        return null;
+    }
+
+    @Override
+    public Response<Boolean> creditExchangeSku(SkuProductShopCartRequestDTO requestDTO) {
+        try {
+            // 1. 创建积分兑换sku抽奖次数的 待支付订单
+            UnpaidActivityOrderEntity skuRechargeOrder = raffleQuotaService.createSkuRechargeOrder(SkuRechargeEntity.builder()
+                    .userId(requestDTO.getUserId())
+                    .sku(requestDTO.getSku())
+                    .outBusinessNo(RandomStringUtils.randomNumeric(12))
+                    .orderTradeType(OrderTradeTypeVO.credit_pay_trade)
+                    .build());
+
+
+            // 2. 扣减积分
+            String creditOrderId = creditAdjustService.createCreditOrder(CreditTradeEntity.builder()
+                    .userId(skuRechargeOrder.getUserId())
+                    .tradeName(TradeNameVO.CONVERT_SKU)
+                    .tradeType(TradeTypeVO.REVERSE)
+                    .amount(skuRechargeOrder.getPayAmount())
+                    .outBusinessNo(skuRechargeOrder.getOutBusinessNo())
+                    .build());
+
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(true)
+                    .build();
+        } catch (Exception e) {
+            log.error("积分兑换商品失败 userId:{} sku:{}", requestDTO.getUserId(), requestDTO.getSku(), e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .data(false)
                     .build();
         }
     }

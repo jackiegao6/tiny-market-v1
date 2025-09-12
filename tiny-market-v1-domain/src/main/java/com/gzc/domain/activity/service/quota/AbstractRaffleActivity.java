@@ -47,7 +47,7 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
     }
 
     @Override
-    public String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity) {
+    public UnpaidActivityOrderEntity createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity) {
 
         // 1. 参数校验
         String userId = skuRechargeEntity.getUserId();
@@ -56,6 +56,12 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         if (null == sku || StringUtils.isBlank(userId) || StringUtils.isBlank(outBusinessNo)) {
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+
+        // 2. 查询未支付订单「一个月以内的未支付订单」
+        UnpaidActivityOrderEntity unpaidCreditOrder =  activityRepository.queryUnpaidActivityOrder(skuRechargeEntity);
+        if (null != unpaidCreditOrder) return unpaidCreditOrder;
+
+
 
         // 2. 查询基础信息
         // 2.1 通过sku查询活动信息
@@ -76,7 +82,14 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         ICreditTradePolicy tradePolicy = creditTradePolicyMap.get(skuRechargeEntity.getOrderTradeType().getCode());
         tradePolicy.creditTrade(createOrderAggregate);
 
-        return createOrderAggregate.getActivityOrderEntity().getOrderId();
+        // 7. 返回订单信息
+        ActivityOrderEntity activityOrderEntity = createOrderAggregate.getActivityOrderEntity();
+        return UnpaidActivityOrderEntity.builder()
+                .userId(userId)
+                .orderId(activityOrderEntity.getOrderId())
+                .outBusinessNo(activityOrderEntity.getOutBusinessNo())
+                .payAmount(activityOrderEntity.getPayAmount())
+                .build();
     }
 
     protected abstract CreateQuotaOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);

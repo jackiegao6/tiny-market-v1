@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 未完成支付的活动单
- * @create 2024-06-15 08:31
  */
 @Data
 @Builder
