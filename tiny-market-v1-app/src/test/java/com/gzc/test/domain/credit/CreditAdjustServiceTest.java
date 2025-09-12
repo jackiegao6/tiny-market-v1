@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Fuzhengwei bugstack.cn @小傅哥
@@ -34,7 +35,7 @@ public class CreditAdjustServiceTest {
         tradeEntity.setTradeType(TradeTypeVO.FORWARD);
         tradeEntity.setAmount(new BigDecimal("10.19"));
         tradeEntity.setOutBusinessNo("10000990991");
-        creditAdjustService.createCreditOrderService(tradeEntity);
+        creditAdjustService.createCreditOrder(tradeEntity);
     }
 
     @Test
@@ -45,7 +46,21 @@ public class CreditAdjustServiceTest {
         tradeEntity.setTradeType(TradeTypeVO.REVERSE);
         tradeEntity.setAmount(new BigDecimal("-10.19"));
         tradeEntity.setOutBusinessNo("20000990991");
-        creditAdjustService.createCreditOrderService(tradeEntity);
+        creditAdjustService.createCreditOrder(tradeEntity);
+    }
+
+
+    @Test
+    public void test_createOrder_pay() throws InterruptedException {
+        CreditTradeEntity tradeEntity = new CreditTradeEntity();
+        tradeEntity.setUserId("czg");
+        tradeEntity.setTradeName(TradeNameVO.CONVERT_SKU);
+        tradeEntity.setTradeType(TradeTypeVO.REVERSE);
+        tradeEntity.setAmount(new BigDecimal("-1.68"));
+        tradeEntity.setOutBusinessNo("70009240609001");
+        creditAdjustService.createCreditOrder(tradeEntity);
+
+        new CountDownLatch(1).await();
     }
 
 }

@@ -1,14 +1,14 @@
-package com.gzc.domain.award.model.valobj;
+package com.gzc.types.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @description 任务状态值对象
+ * @description mq消息 状态值对象
  */
 @Getter
 @AllArgsConstructor
-public enum TaskStateVO {
+public enum MQTaskStateVO {
 
     create("create", "创建"),
     complete("complete", "发送完成"),

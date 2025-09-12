@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @description 抽奖活动sku持久化对象
+ * @description 抽奖活动sku 持久化对象
  */
 @Data
 public class RaffleActivitySku {

@@ -1,11 +1,13 @@
 package com.gzc.test.domain.activity;
 
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
+import com.gzc.domain.activity.model.valobj.OrderTradeTypeVO;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.activity.service.armory.IActivityArmory;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +28,7 @@ public class RaffleOrderTest {
     @Resource
     private IActivityArmory activityArmory;
 
-    @Test
+    @Before
     public void setUp() {
         log.info("装配活动：{}", activityArmory.assembleActivitySku(9011L));
     }
@@ -63,7 +65,18 @@ public class RaffleOrderTest {
                 log.warn(e.getInfo());
             }
         }
-
     }
+
+    @Test
+    public void test_credit_pay_trade() {
+        SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
+        skuRechargeEntity.setUserId("czg");
+        skuRechargeEntity.setSku(9011L);
+        skuRechargeEntity.setOutBusinessNo("70009240609001");
+        skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.credit_pay_trade);
+        String orderId = raffleQuota.createSkuRechargeOrder(skuRechargeEntity);
+        log.info("测试结果：{}", orderId);
+    }
+
 
 }

@@ -1,6 +1,6 @@
-package com.gzc.domain.award.model.entity;
+package com.gzc.domain.credit.model.entity;
 
-import com.gzc.domain.award.event.SendAwardMessageEvent;
+import com.gzc.domain.credit.event.CreditAdjustSuccessMessageEvent;
 import com.gzc.types.enums.MQTaskStateVO;
 import com.gzc.types.event.BaseEvent;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskEntity {
+public class CreditAdjustTaskEntity {
 
     /** 活动ID */
     private String userId;
@@ -24,7 +24,7 @@ public class TaskEntity {
     /** 消息编号 */
     private String messageId;
     /** 消息主体 */
-    private BaseEvent.EventMessage<SendAwardMessageEvent.SendAwardMessage> message;
+    private BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> message;
     /** 任务状态；create-创建、completed-完成、fail-失败 */
     private MQTaskStateVO state;
 

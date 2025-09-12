@@ -1,6 +1,7 @@
 package com.gzc.domain.activity.service;
 
 import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
+import com.gzc.domain.activity.model.entity.DeliveryOrderEntity;
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
 
 public interface IRaffleQuotaService {
@@ -16,6 +17,19 @@ public interface IRaffleQuotaService {
      */
     String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
 
+
+    /**
+     * 订单出货 - 积分充值
+     * @param deliveryOrderEntity 出货单实体对象
+     */
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
+
+    /**
+     * 查询活动账户
+     * @param activityId 活动id
+     * @param userId 用户id
+     * @return 活动账户（总）实体对象
+     */
     ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId);
 
     Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);

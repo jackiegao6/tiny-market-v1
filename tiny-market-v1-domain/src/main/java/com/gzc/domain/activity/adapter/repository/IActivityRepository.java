@@ -1,11 +1,8 @@
 package com.gzc.domain.activity.adapter.repository;
 
-import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
+import com.gzc.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.gzc.domain.activity.model.aggregate.partake.CreatePartakeOrderAggregate;
-import com.gzc.domain.activity.model.entity.ActivityAccountEntity;
-import com.gzc.domain.activity.model.entity.ActivityCountEntity;
-import com.gzc.domain.activity.model.entity.ActivityEntity;
-import com.gzc.domain.activity.model.entity.ActivitySkuEntity;
+import com.gzc.domain.activity.model.entity.*;
 import com.gzc.domain.activity.model.entity.partake.ActivityAccountDayEntity;
 import com.gzc.domain.activity.model.entity.partake.ActivityAccountMonthEntity;
 import com.gzc.domain.activity.model.entity.partake.PartakeRaffleActivityEntity;
@@ -28,7 +25,8 @@ public interface IActivityRepository {
 
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
 
-    void doSaveSkuRechargeOrder(CreateOrderAggregate createOrderAggregate);
+    void doSaveSkuRechargeOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
+    void doSaveCreditPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
 
     void cacheActivitySkuStockCount(String cacheKey, Integer stockCountSurplus);
 
@@ -61,5 +59,7 @@ public interface IActivityRepository {
     ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId);
 
     Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);
+
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
 
 }

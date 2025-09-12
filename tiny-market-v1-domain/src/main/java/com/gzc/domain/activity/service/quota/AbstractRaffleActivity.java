@@ -2,16 +2,19 @@ package com.gzc.domain.activity.service.quota;
 
 import com.alibaba.fastjson.JSON;
 import com.gzc.domain.activity.adapter.repository.IActivityRepository;
-import com.gzc.domain.activity.model.aggregate.CreateOrderAggregate;
+import com.gzc.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.gzc.domain.activity.model.entity.*;
 import com.gzc.domain.activity.service.IRaffleOrder;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
+import com.gzc.domain.activity.service.quota.policy.ICreditTradePolicy;
 import com.gzc.domain.activity.service.quota.rule.IActionChain;
 import com.gzc.domain.activity.service.quota.rule.factory.DefaultActivityChainFactory;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * @description 抽奖活动抽象类，定义标准的流程
@@ -21,10 +24,12 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
 
     protected IActivityRepository activityRepository;
     protected DefaultActivityChainFactory defaultActivityChainFactory;
+    private final Map<String, ICreditTradePolicy> creditTradePolicyMap;
 
-    public AbstractRaffleActivity(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory) {
+    public AbstractRaffleActivity(IActivityRepository activityRepository, DefaultActivityChainFactory defaultActivityChainFactory, Map<String, ICreditTradePolicy> tradePolicyMap) {
         this.activityRepository = activityRepository;
         this.defaultActivityChainFactory = defaultActivityChainFactory;
+        this.creditTradePolicyMap = tradePolicyMap;
     }
 
     @Override
@@ -65,15 +70,14 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         actionChain.logic(activitySkuEntity, activityEntity, activityCountEntity);
 
         // 4. 构建聚合对象
-        CreateOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
+        CreateQuotaOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
 
         // 5. 增加用户额度
-        doSaveSkuRechargeOrder(createOrderAggregate);
+        ICreditTradePolicy tradePolicy = creditTradePolicyMap.get(skuRechargeEntity.getOrderTradeType().getCode());
+        tradePolicy.creditTrade(createOrderAggregate);
 
         return createOrderAggregate.getActivityOrderEntity().getOrderId();
     }
 
-    protected abstract CreateOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);
-
-    protected abstract void doSaveSkuRechargeOrder(CreateOrderAggregate createOrderAggregate);
+    protected abstract CreateQuotaOrderAggregate buildOrderAggregate(SkuRechargeEntity skuRechargeEntity, ActivitySkuEntity activitySkuEntity, ActivityEntity activityEntity, ActivityCountEntity activityCountEntity);
 }

@@ -3,6 +3,7 @@ package com.gzc.trigger.listener;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.gzc.domain.activity.model.entity.SkuRechargeEntity;
+import com.gzc.domain.activity.model.valobj.OrderTradeTypeVO;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.credit.model.entity.CreditTradeEntity;
 import com.gzc.domain.credit.model.valobj.TradeNameVO;
@@ -53,6 +54,7 @@ public class RebateMessageCustomer {
                             .userId(msgBody.getUserId())
                             .sku(Long.valueOf(msgBody.getRebateConfig()))
                             .outBusinessNo(msgBody.getBizId())
+                            .orderTradeType(OrderTradeTypeVO.rebate_no_pay_trade)
                             .build();
                     raffleQuotaService.createSkuRechargeOrder(skuRechargeEntity);
                     break;
@@ -64,7 +66,7 @@ public class RebateMessageCustomer {
                             .amount(new BigDecimal(msgBody.getRebateConfig()))
                             .outBusinessNo(msgBody.getBizId())
                             .build();
-                    creditAdjustService.createCreditOrderService(creditTradeEntity);
+                    creditAdjustService.createCreditOrder(creditTradeEntity);
                     break;
             }
         }catch (Exception e){

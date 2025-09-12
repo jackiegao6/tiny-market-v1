@@ -1,7 +1,7 @@
 package com.gzc.domain.rebate.model.entity;
 
 import com.gzc.domain.rebate.event.SendRebateMessageEvent;
-import com.gzc.domain.rebate.model.valobj.TaskStateVO;
+import com.gzc.types.enums.MQTaskStateVO;
 import com.gzc.types.event.BaseEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +18,5 @@ public class BehaviorRebateTaskEntity {
     private String topic;
     private String messageId;
     private BaseEvent.EventMessage<SendRebateMessageEvent.RebateMessage> message;
-    private TaskStateVO taskStateVO;
+    private MQTaskStateVO taskStateVO;
 }

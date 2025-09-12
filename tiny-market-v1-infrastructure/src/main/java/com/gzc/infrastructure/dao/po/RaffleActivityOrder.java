@@ -6,9 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 抽奖活动单 持久化对象
- * @create 2024-03-02 13:21
  */
 @Data
 public class RaffleActivityOrder {

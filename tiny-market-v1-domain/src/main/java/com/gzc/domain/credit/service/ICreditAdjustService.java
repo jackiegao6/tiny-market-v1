@@ -5,6 +5,6 @@ import com.gzc.domain.credit.model.entity.CreditTradeEntity;
 
 public interface ICreditAdjustService {
 
-    String createCreditOrderService(CreditTradeEntity creditTradeEntity);
+    String createCreditOrder(CreditTradeEntity creditTradeEntity);
 
 }

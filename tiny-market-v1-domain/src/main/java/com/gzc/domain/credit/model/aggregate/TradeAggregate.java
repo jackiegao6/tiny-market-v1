@@ -1,9 +1,13 @@
 package com.gzc.domain.credit.model.aggregate;
 
+import com.gzc.domain.credit.event.CreditAdjustSuccessMessageEvent;
 import com.gzc.domain.credit.model.entity.CreditAccountEntity;
 import com.gzc.domain.credit.model.entity.CreditOrderEntity;
+import com.gzc.domain.credit.model.entity.CreditAdjustTaskEntity;
 import com.gzc.domain.credit.model.valobj.TradeNameVO;
 import com.gzc.domain.credit.model.valobj.TradeTypeVO;
+import com.gzc.types.enums.MQTaskStateVO;
+import com.gzc.types.event.BaseEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +31,7 @@ public class TradeAggregate {
     private CreditAccountEntity creditAccountEntity;
     // 积分订单实体
     private CreditOrderEntity creditOrderEntity;
+    private CreditAdjustTaskEntity creditAdjustTaskEntity;
 
     public static CreditAccountEntity createCreditAccountEntity(String userId, BigDecimal adjustAmount) {
         return CreditAccountEntity.builder().userId(userId).adjustAmount(adjustAmount).build();
@@ -45,6 +50,16 @@ public class TradeAggregate {
                 .tradeAmount(tradeAmount)
                 .outBusinessNo(outBusinessNo)
                 .build();
+    }
+
+    public static CreditAdjustTaskEntity createCreditAdjustTaskEntity(String userId, String topic, String messageId, BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> message) {
+        CreditAdjustTaskEntity taskEntity = new CreditAdjustTaskEntity();
+        taskEntity.setUserId(userId);
+        taskEntity.setTopic(topic);
+        taskEntity.setMessageId(messageId);
+        taskEntity.setMessage(message);
+        taskEntity.setState(MQTaskStateVO.create);
+        return taskEntity;
     }
 
 }

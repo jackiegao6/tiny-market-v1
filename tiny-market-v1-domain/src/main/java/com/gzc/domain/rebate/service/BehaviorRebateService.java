@@ -6,9 +6,9 @@ import com.gzc.domain.rebate.model.entity.BehaviorEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateTaskEntity;
 import com.gzc.domain.rebate.model.valobj.DailyBehaviorRebateVO;
-import com.gzc.domain.rebate.model.valobj.TaskStateVO;
 import com.gzc.domain.rebate.repository.IBehaviorRebateRepository;
 import com.gzc.types.common.Constants;
+import com.gzc.types.enums.MQTaskStateVO;
 import com.gzc.types.event.BaseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class BehaviorRebateService implements IBehaviorRebateService {
                     .topic(sendRebateMessageEvent.topic())
                     .messageId(rebateMessageEventMessage.getId())
                     .message(rebateMessageEventMessage)
-                    .taskStateVO(TaskStateVO.CREATE)
+                    .taskStateVO(MQTaskStateVO.create)
                     .build();
 
 

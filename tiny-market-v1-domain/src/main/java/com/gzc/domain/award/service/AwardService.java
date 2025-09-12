@@ -6,8 +6,8 @@ import com.gzc.domain.award.model.aggregate.UserAwardRecordAggregate;
 import com.gzc.domain.award.model.entity.DistributeAwardEntity;
 import com.gzc.domain.award.model.entity.TaskEntity;
 import com.gzc.domain.award.model.entity.UserAwardRecordEntity;
-import com.gzc.domain.award.model.valobj.TaskStateVO;
 import com.gzc.domain.award.service.distribute.IDistributeAwardService;
+import com.gzc.types.enums.MQTaskStateVO;
 import com.gzc.types.event.BaseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class AwardService implements IAwardService {
                 .topic(sendAwardMessageEvent.topic())
                 .messageId(message.getId())
                 .message(message)
-                .state(TaskStateVO.create)
+                .state(MQTaskStateVO.create)
                 .build();
 
         UserAwardRecordAggregate aggregate = UserAwardRecordAggregate.builder()
