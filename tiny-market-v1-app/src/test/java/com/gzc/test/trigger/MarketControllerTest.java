@@ -2,10 +2,7 @@ package com.gzc.test.trigger;
 
 import com.alibaba.fastjson.JSON;
 import com.gzc.api.IMarketController;
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightRequestDTO;
-import com.gzc.api.dto.market.RaffleStrategyRuleWeightResponseDTO;
-import com.gzc.api.dto.market.UserActivityAccountRequestDTO;
-import com.gzc.api.dto.market.UserActivityAccountResponseDTO;
+import com.gzc.api.dto.market.*;
 import com.gzc.api.response.Response;
 import com.gzc.domain.activity.service.armory.IActivityArmory;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -71,4 +70,34 @@ public class MarketControllerTest {
         log.info("请求参数：{}", JSON.toJSONString(request));
         log.info("测试结果：{}", JSON.toJSONString(response));
     }
+
+
+    @Test
+    public void test_querySkuProductListByActivityId() {
+        Long request = 100301L;
+        Response<List<SkuProductResponseDTO>> response = marketController.querySkuListByActivityId(request);
+        log.info("请求参数：{}", JSON.toJSONString(request));
+        log.info("测试结果：{}", JSON.toJSONString(response));
+    }
+
+    @Test
+    public void test_queryUserCreditAccount() {
+        String request = "gzc";
+        Response<BigDecimal> response = marketController.queryCreditAccount(request);
+        log.info("请求参数：{}", JSON.toJSONString(request));
+        log.info("测试结果：{}", JSON.toJSONString(response));
+    }
+
+    @Test
+    public void test_creditPayExchangeSku() throws InterruptedException {
+        SkuProductShopCartRequestDTO request = new SkuProductShopCartRequestDTO();
+        request.setUserId("gzc");
+        request.setSku(9011L);
+        Response<Boolean> response = marketController.creditExchangeSku(request);
+        log.info("请求参数：{}", JSON.toJSONString(request));
+        log.info("测试结果：{}", JSON.toJSONString(response));
+
+        new CountDownLatch(1).await();
+    }
+
 }

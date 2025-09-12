@@ -11,6 +11,7 @@ import com.gzc.domain.activity.model.entity.UnpaidActivityOrderEntity;
 import com.gzc.domain.activity.model.valobj.OrderTradeTypeVO;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.activity.service.IRaffleSkuProductService;
+import com.gzc.domain.credit.model.entity.CreditAccountEntity;
 import com.gzc.domain.credit.model.entity.CreditTradeEntity;
 import com.gzc.domain.credit.model.valobj.TradeNameVO;
 import com.gzc.domain.credit.model.valobj.TradeTypeVO;
@@ -225,13 +226,27 @@ public class MarketController implements IMarketController {
 
     @Override
     public Response<BigDecimal> queryCreditAccount(String userId) {
-        return null;
+        try {
+            log.info("查询用户积分值开始 userId:{}", userId);
+            CreditAccountEntity creditAccountEntity = creditAdjustService.queryUserCreditAccount(userId);
+            log.info("查询用户积分值完成 userId:{} adjustAmount:{}", userId, creditAccountEntity.getAdjustAmount());
+            return Response.<BigDecimal>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(creditAccountEntity.getAdjustAmount())
+                    .build();
+        } catch (Exception e) {
+            log.error("查询用户积分值失败 userId:{}", userId, e);
+            return Response.<BigDecimal>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
     }
 
     @Override
     public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
         try {
-            log.info("查询sku商品集合开始 activityId:{}", activityId);
             // 1. 参数校验
             if (null == activityId) {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
@@ -257,7 +272,6 @@ public class MarketController implements IMarketController {
                 skuProductResponseDTOS.add(skuProductResponseDTO);
             }
 
-            log.info("查询sku商品集合完成 activityId:{} skuProductResponseDTOS:{}", activityId, JSON.toJSONString(skuProductResponseDTOS));
             return Response.<List<SkuProductResponseDTO>>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())
