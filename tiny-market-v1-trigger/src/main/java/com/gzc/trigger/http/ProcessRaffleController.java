@@ -14,6 +14,7 @@ import com.gzc.domain.strategy.model.entity.RaffleAwardEntity;
 import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
+import com.gzc.types.annotation.DCCValue;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -46,23 +47,14 @@ public class ProcessRaffleController implements IProcessRaffleController {
     private IActivityArmory activityArmory;
     @Resource
     private IStrategyArmory strategyArmory;
+    @DCCValue("degradeSwitch:open")
+    private String degradeSwitch;
 
     /**
      * 抽奖接口
      *
      * @param request 请求对象
      * @return 抽奖结果
-     * <p>
-     * 接口：<a href="http://localhost:8091/api/v1/raffle/activity/draw">/api/v1/raffle/activity/draw</a>
-     * 入参：{"activityId":100001,"userId":"xiaofuge"}
-     *
-     * curl --request POST \
-     *   --url http://localhost:8091/api/v1/raffle/activity/draw \
-     *   --header 'content-type: application/json' \
-     *   --data '{
-     *     "userId":"xiaofuge",
-     *     "activityId": 100301
-     * }'
      */
     @RequestMapping(value = "/draw", method = RequestMethod.POST)
     @Override
@@ -72,6 +64,14 @@ public class ProcessRaffleController implements IProcessRaffleController {
             if (StringUtils.isBlank(request.getUserId()) || null == request.getActivityId()) {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
             }
+
+            if (!"open".equals(degradeSwitch)){
+                return Response.<ActivityDrawResponseDTO>builder()
+                        .code(ResponseCode.DEGRADE_STATUS.getCode())
+                        .info(ResponseCode.DEGRADE_STATUS.getInfo())
+                        .build();
+            }
+
             // 2. 参与活动 - 创建参与记录订单
             UserRaffleOrderEntity orderEntity = raffleActivityPartakeService.createRaffleOrder(request.getUserId(), request.getActivityId());
             log.info("活动抽奖，创建订单 userId:{} activityId:{} orderId:{}", request.getUserId(), request.getActivityId(), orderEntity.getOrderId());

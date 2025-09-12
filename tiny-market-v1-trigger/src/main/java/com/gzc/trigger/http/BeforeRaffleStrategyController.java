@@ -45,6 +45,8 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
     private IRaffleStrategy raffleStrategy;
     @Resource
     private IRaffleRule raffleRule;
+    @Resource
+    private IRaffleOrder raffleOrder;
 
     /**
      * 活动装配 - 数据预热 | 把活动配置的对应的 sku 一起装配
@@ -136,10 +138,6 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
                     .build();
         }
     }
-
-    @Resource
-    private IRaffleOrder raffleOrder;
-    // todo
 
     @RequestMapping(value = "/strategy_armory", method = RequestMethod.GET)
     @Override
