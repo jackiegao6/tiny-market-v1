@@ -3,11 +3,13 @@ package com.gzc.api.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @description 活动抽奖请求对象
  */
 @Data
-public class ActivityDrawRequestDTO {
+public class ActivityDrawRequestDTO implements Serializable {
 
     /**
      * 用户ID

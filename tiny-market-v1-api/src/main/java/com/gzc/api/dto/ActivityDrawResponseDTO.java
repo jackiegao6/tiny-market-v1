@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @description
  */
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityDrawResponseDTO {
+public class ActivityDrawResponseDTO implements Serializable {
 
     // 奖品ID
     private Integer awardId;

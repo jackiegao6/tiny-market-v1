@@ -2,13 +2,14 @@ package com.gzc.api.dto.market;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * @description sku商品对象
  */
 @Data
-public class SkuProductResponseDTO {
+public class SkuProductResponseDTO implements Serializable {
 
     /**
      * 商品sku
