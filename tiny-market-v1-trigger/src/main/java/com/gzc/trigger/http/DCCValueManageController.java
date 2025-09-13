@@ -27,7 +27,7 @@ public class DCCValueManageController implements IDCCValueManageController {
      * 更新配置
      * <p>
      */
-    @RequestMapping(value = "update_config", method = RequestMethod.GET)
+    @RequestMapping(value = "/update_config", method = RequestMethod.GET)
     @Override
     public Response<Boolean> updateDCCValue(@RequestParam String key, @RequestParam String value) {
         try {

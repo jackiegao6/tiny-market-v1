@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
@@ -40,11 +42,17 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                     String dccValuePathConfig = newData.getPath();
                     Object objBean = dccObjMap.get(dccValuePathConfig);
                     if (objBean == null) return;
+                    Class<?> targetBeanClass = objBean.getClass();
+                    Object targetBean = objBean;
+                    if (AopUtils.isAopProxy(objBean)){
+                        targetBeanClass = AopUtils.getTargetClass(objBean);
+                        targetBean = AopProxyUtils.getSingletonTarget(objBean);
+                    }
 
                     try{
-                        Field field = objBean.getClass().getDeclaredField(dccValuePathConfig.substring(dccValuePathConfig.lastIndexOf("/") + 1));
+                        Field field = targetBean.getClass().getDeclaredField(dccValuePathConfig.substring(dccValuePathConfig.lastIndexOf("/") + 1));
                         field.setAccessible(true);
-                        field.set(objBean, newData.getData());
+                        field.set(targetBean, newData.getData());
                         field.setAccessible(false);
                     }catch (Exception e){
                         throw new RuntimeException(e);
@@ -58,8 +66,16 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class<?> beanClass = bean.getClass();
-        Field[] fields = beanClass.getDeclaredFields();
+
+        Class<?> targetBeanClass = bean.getClass();
+        Object targetBean = bean;
+
+        if (AopUtils.isAopProxy(bean)){
+            targetBeanClass = AopUtils.getTargetClass(bean);
+            targetBean = AopProxyUtils.getSingletonTarget(bean);
+        }
+
+        Field[] fields = targetBeanClass.getDeclaredFields();
         for (Field field : fields) {
             if (!field.isAnnotationPresent(DCCValue.class))
                 continue;
@@ -80,19 +96,19 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                 }
                 if (!StringUtils.isBlank(defaultValue)){
                     field.setAccessible(true);
-                    field.set(bean, defaultValue);
+                    field.set(targetBean, defaultValue);
                     field.setAccessible(false);
                 }else {
                     defaultValue = new String(zookeeperClient.getData().forPath(keyPath));
                     field.setAccessible(true);
-                    field.set(bean, defaultValue);
+                    field.set(targetBean, defaultValue);
                     field.setAccessible(false);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
-            dccObjMap.put(keyPath, bean);
+            dccObjMap.put(keyPath, targetBean);
         }
         return bean;
     }

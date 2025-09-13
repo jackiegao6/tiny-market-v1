@@ -15,8 +15,11 @@ import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
 import com.gzc.types.annotation.DCCValue;
+import com.gzc.types.annotation.RateLimiterAccessInterceptor;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -26,9 +29,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 抽奖活动服务 注意；在不引用 application/case 层的时候，就需要让接口实现层来做领域的串联。一些较大规模的系统，需要加入 case 层。
- * @create 2024-04-13 09:42
  */
 @Slf4j
 @RestController()
@@ -47,7 +48,7 @@ public class ProcessRaffleController implements IProcessRaffleController {
     private IActivityArmory activityArmory;
     @Resource
     private IStrategyArmory strategyArmory;
-    @DCCValue("degradeSwitch:open")
+    @DCCValue("degradeSwitch:close")
     private String degradeSwitch;
 
     /**
@@ -56,6 +57,11 @@ public class ProcessRaffleController implements IProcessRaffleController {
      * @param request 请求对象
      * @return 抽奖结果
      */
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "150")
+    }, fallbackMethod = "drawHystrixError"
+    )
+    @RateLimiterAccessInterceptor(key = "userId", fallbackMethod = "drawRateLimiterError", permitsPerSecond = 1.0d, blacklistCount = 1)
     @RequestMapping(value = "/draw", method = RequestMethod.POST)
     @Override
     public Response<ActivityDrawResponseDTO> draw(@RequestBody ActivityDrawRequestDTO request) {
@@ -65,7 +71,8 @@ public class ProcessRaffleController implements IProcessRaffleController {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
             }
 
-            if (!"open".equals(degradeSwitch)){
+            // 0. 降级开关【open 开启、close 关闭】
+            if (StringUtils.isNotBlank(degradeSwitch) && "open".equals(degradeSwitch)) {
                 return Response.<ActivityDrawResponseDTO>builder()
                         .code(ResponseCode.DEGRADE_STATUS.getCode())
                         .info(ResponseCode.DEGRADE_STATUS.getInfo())
@@ -118,6 +125,22 @@ public class ProcessRaffleController implements IProcessRaffleController {
                     .info(ResponseCode.UN_ERROR.getInfo())
                     .build();
         }
+    }
+
+    public Response<ActivityDrawResponseDTO> drawRateLimiterError(@RequestBody ActivityDrawRequestDTO request) {
+
+        return Response.<ActivityDrawResponseDTO>builder()
+                .code(ResponseCode.RATE_LIMITER.getCode())
+                .info(ResponseCode.RATE_LIMITER.getInfo())
+                .build();
+    }
+
+    public Response<ActivityDrawResponseDTO> drawHystrixError(@RequestBody ActivityDrawRequestDTO request) {
+        log.info("活动抽奖熔断 userId:{} activityId:{}", request.getUserId(), request.getActivityId());
+        return Response.<ActivityDrawResponseDTO>builder()
+                .code(ResponseCode.HYSTRIX.getCode())
+                .info(ResponseCode.HYSTRIX.getInfo())
+                .build();
     }
 
 }
