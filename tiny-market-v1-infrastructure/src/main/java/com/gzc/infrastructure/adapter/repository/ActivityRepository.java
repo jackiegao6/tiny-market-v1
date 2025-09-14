@@ -83,13 +83,11 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
-    public ActivityEntity queryRaffleActivityByActivityId(Long activityId) {
-        // 优先从缓存获取
-        String cacheKey = Constants.RedisKey.ACTIVITY_KEY + activityId;
+    public ActivityEntity queryActivityInfoByActivityId(Long activityId) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_INFO_KEY + activityId;
         ActivityEntity activityEntity = redisService.getValue(cacheKey);
         if (null != activityEntity) return activityEntity;
 
-        // 从库中获取数据
         RaffleActivity raffleActivity = raffleActivityDao.queryRaffleActivityByActivityId(activityId);
         activityEntity = ActivityEntity.builder()
                 .activityId(raffleActivity.getActivityId())
@@ -107,7 +105,7 @@ public class ActivityRepository implements IActivityRepository {
     @Override
     public ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId) {
         // 优先从缓存获取
-        String cacheKey = Constants.RedisKey.ACTIVITY_COUNT_KEY + activityCountId;
+        String cacheKey = Constants.RedisKey.ACTIVITY_PERSONAL_LIMIT_KEY + activityCountId;
         ActivityCountEntity activityCountEntity = redisService.getValue(cacheKey);
         if (null != activityCountEntity) return activityCountEntity;
 
@@ -237,12 +235,6 @@ public class ActivityRepository implements IActivityRepository {
         } finally {
             dbRouter.clear();
         }
-    }
-
-    @Override
-    public void cacheActivitySkuStockCount(String cacheKey, Integer stockCountSurplus) {
-        if (redisService.isExists(cacheKey)) return;
-        redisService.setAtomicLong(cacheKey, stockCountSurplus);
     }
 
     @Override
@@ -504,11 +496,21 @@ public class ActivityRepository implements IActivityRepository {
         List<ActivitySkuEntity> activitySkuEntities = new ArrayList<>(raffleActivitySkus.size());
         for (RaffleActivitySku raffleActivitySku : raffleActivitySkus) {
             ActivitySkuEntity activitySkuEntity = new ActivitySkuEntity();
-            activitySkuEntity.setSku(raffleActivitySku.getSku());
+            Long sku = raffleActivitySku.getSku();
+            Integer stockCountSurplus = raffleActivitySku.getStockCountSurplus();
+
+            activitySkuEntity.setSku(sku);
             activitySkuEntity.setActivityCountId(raffleActivitySku.getActivityCountId());
             activitySkuEntity.setStockCount(raffleActivitySku.getStockCount());
-            activitySkuEntity.setStockCountSurplus(raffleActivitySku.getStockCountSurplus());
+            activitySkuEntity.setStockCountSurplus(stockCountSurplus);
+
+            String cacheKey = Constants.RedisKey.ACTIVITY_SKU_STOCK_SURPLUS_KEY + sku;
             activitySkuEntities.add(activitySkuEntity);
+
+            // 查sku信息的时候 顺便缓存该sku的库存剩余信息
+            if (redisService.isExists(cacheKey))
+                continue;
+            redisService.setAtomicLong(cacheKey, stockCountSurplus);
         }
         return activitySkuEntities;
     }

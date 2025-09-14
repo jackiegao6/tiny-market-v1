@@ -13,22 +13,27 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 活动仓储接口
- * @create 2024-03-16 10:31
  */
 public interface IActivityRepository {
 
-    ActivitySkuEntity queryActivitySku(Long sku);
+    /**
+     * domain: armory
+     */
+    ActivityEntity queryActivityInfoByActivityId(Long activityId);
 
-    ActivityEntity queryRaffleActivityByActivityId(Long activityId);
+    List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId);
 
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
 
-    void doSaveSkuRechargeOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
-    void doSaveCreditPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
 
-    void cacheActivitySkuStockCount(String cacheKey, Integer stockCountSurplus);
+
+
+    ActivitySkuEntity queryActivitySku(Long sku);
+
+    void doSaveSkuRechargeOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
+
+    void doSaveCreditPayOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
 
     boolean subtractionActivitySkuStock(Long sku, String cacheKey, Date endDateTime);
 
@@ -51,8 +56,6 @@ public interface IActivityRepository {
     ActivityAccountDayEntity queryActivityAccountDayByUserId(String userId, Long activityId, String day);
 
     void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
-
-    List<ActivitySkuEntity> queryActivitySkuListByActivityId(Long activityId);
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 

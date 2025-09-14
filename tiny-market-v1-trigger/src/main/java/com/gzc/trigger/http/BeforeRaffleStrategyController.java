@@ -49,16 +49,11 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
     private IRaffleOrder raffleOrder;
 
     /**
-     * 活动装配 - 数据预热 | 把活动配置的对应的 sku 一起装配
+     * 活动装配|策略装配 - 数据预热
      *
      * @param activityId 活动ID
      * @return 装配结果
-     * <p>
-     * 接口：<a href="http://localhost:8091/api/v1/raffle/activity/armory">/api/v1/raffle/activity/armory</a>
-     * 入参：{"activityId":100001,"userId":"xiaofuge"}
-     *
-     * curl --request GET \
-     *   --url 'http://localhost:8091/api/v1/raffle/activity/armory?activityId=100301'
+     * 接口：<a href="http://localhost:8098/api/v1/raffle/activity/armory">/api/v1/raffle/activity/armory</a>
      */
     @RequestMapping(value = "/armory", method = RequestMethod.GET)
     @Override
@@ -66,7 +61,7 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
         try {
             // 1. 活动装配 活动本身的信息 活动总次数的统计量 活动涉及的sku的库存
             activityArmory.assembleActivitySkuByActivityId(activityId);
-            // 2. 策略装配 该策略涉及到的奖品列表信息 各个奖品的库存 该策略包含的奖品数量 该策略生成的用于抽奖的哈希表
+            // 2. 策略装配 该策略涉及到的奖品列表信息 各个奖品的库存 该策略生成的用于抽奖的哈希表
             strategyArmory.assembleLotteryStrategyByActivityId(activityId);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
@@ -74,10 +69,10 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
                     .data(true)
                     .build();
         } catch (Exception e) {
-            log.error("活动装配，数据预热，失败 activityId:{}", activityId, e);
+            log.error("数据预热环节，失败 activityId:{}", activityId, e);
             return Response.<Boolean>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .code(ResponseCode.ARMORY_ERROR.getCode())
+                    .info(ResponseCode.ARMORY_ERROR.getInfo())
                     .build();
         }
     }

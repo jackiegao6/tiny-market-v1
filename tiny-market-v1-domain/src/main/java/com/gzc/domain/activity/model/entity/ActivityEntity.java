@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 活动实体对象
- * @create 2024-03-16 11:15
  */
 @Data
 @Builder
@@ -43,11 +41,6 @@ public class ActivityEntity {
      * 结束时间
      */
     private Date endDateTime;
-
-    /**
-     * 活动参与次数配置
-     */
-    private Long activityCountId;
 
     /**
      * 抽奖策略ID
