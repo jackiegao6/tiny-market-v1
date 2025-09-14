@@ -30,20 +30,43 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RateLimiterAOP {
 
-    // 个人限频记录1分钟
+    /**
+     * 个人限频记录1分钟
+     * 类型：Cache<String, RateLimiter>
+     * 作用：存储某个 key（比如 userId、IP）对应的 RateLimiter。
+     * 过期策略：放进去 1 分钟后自动失效，防止内存里堆积太多用户的限流器。
+     * 使用场景：限制每个用户 1 分钟内的请求速率。
+     */
     private final Cache<String, RateLimiter> loginRecord = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
-    // 个人限频黑名单1h - 分布式业务场景，可以记录到 Redis 中
+
+    /**
+     * 个人限频黑名单1h - 分布式业务场景，可以记录到 Redis 中
+     * 如果某用户违规次数超过阈值（blacklistCount），就视为进入黑名单，拦截请求。
+     * <p/>
+     * 类型：Cache<String, Long>
+     * 作用：存储某个 key（用户 ID/IP）对应的 违规次数。
+     * 过期策略：计数在 1 小时后失效，相当于“黑名单有效期 1 小时”。
+     * 使用场景：如果用户在短时间内多次被限流，就把他“记黑”，后续直接拒绝请求。
+     */
     private final Cache<String, Long> blacklist = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
     @DCCValue("rateLimiterSwitch:open")
     private String rateLimiterSwitch;
 
+    /**
+     * 切点
+     * 拦截被 @RateLimiterAccessInterceptor 注解标记的方法
+     */
+    @Pointcut("@annotation(com.gzc.types.annotation.RateLimiterAccessInterceptor)")
+    public void aopPoint(){}
 
-    @Pointcut("@annotation(com.gzc.types.annotation.RateLimiterAccessInterceptor))")
-    public void aopPoint(){
-
-    }
-
+    /**
+     * 环绕通知，可以在方法执行前后都加逻辑，还能决定是否继续执行原方法
+     * @param joinPoint
+     * @param rateLimiterAccessInterceptor
+     * @return
+     * @throws Throwable
+     */
     @Around("aopPoint() && @annotation(rateLimiterAccessInterceptor)")
     public Object doRouter(ProceedingJoinPoint joinPoint, RateLimiterAccessInterceptor rateLimiterAccessInterceptor) throws Throwable {
 
@@ -62,7 +85,7 @@ public class RateLimiterAOP {
         log.info("aop attr: {}", keyAttr);
 
         // 黑名单拦截
-        if (!"all".equals(keyAttr) && rateLimiterAccessInterceptor.blacklistCount() != 0 && null != blacklist.getIfPresent(keyAttr) && blacklist.getIfPresent(keyAttr) > rateLimiterAccessInterceptor.blacklistCount()) {
+        if (!"all".equals(keyAttr) && rateLimiterAccessInterceptor.limit2blacklist() != 0 && null != blacklist.getIfPresent(keyAttr) && blacklist.getIfPresent(keyAttr) > rateLimiterAccessInterceptor.limit2blacklist()) {
             log.info("限流-黑名单拦截(1h)：{}", keyAttr);
             return fallbackMethodResult(joinPoint, rateLimiterAccessInterceptor.fallbackMethod());
         }
@@ -76,14 +99,17 @@ public class RateLimiterAOP {
 
         // 限流拦截
         if (!rateLimiter.tryAcquire()){
-            if (rateLimiterAccessInterceptor.blacklistCount() != 0){
+            // 没拿到令牌
+            log.info("限流-超频次拦截：{}", keyAttr);
+
+            if (rateLimiterAccessInterceptor.limit2blacklist() != 0){
+                // 准备加入黑名单
                 if (blacklist.getIfPresent(keyAttr) == null){
                     blacklist.put(keyAttr, 1L);
                 }else {
                     blacklist.put(keyAttr, blacklist.getIfPresent(keyAttr) + 1L);
                 }
             }
-            log.info("限流-超频次拦截：{}", keyAttr);
             return fallbackMethodResult(joinPoint, rateLimiterAccessInterceptor.fallbackMethod());
         }
 

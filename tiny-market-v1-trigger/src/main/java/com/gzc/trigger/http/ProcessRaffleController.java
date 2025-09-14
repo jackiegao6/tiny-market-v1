@@ -61,7 +61,7 @@ public class ProcessRaffleController implements IProcessRaffleController {
             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "150")
     }, fallbackMethod = "drawHystrixError"
     )
-    @RateLimiterAccessInterceptor(key = "userId", fallbackMethod = "drawRateLimiterError", permitsPerSecond = 1.0d, blacklistCount = 1)
+    @RateLimiterAccessInterceptor(key = "userId", fallbackMethod = "drawRateLimiterError", permitsPerSecond = 1.0d, limit2blacklist = 3)
     @RequestMapping(value = "/draw", method = RequestMethod.POST)
     @Override
     public Response<ActivityDrawResponseDTO> draw(@RequestBody ActivityDrawRequestDTO request) {

@@ -13,7 +13,7 @@ public @interface RateLimiterAccessInterceptor {
 
     double permitsPerSecond();
 
-    double blacklistCount() default 0;
+    double limit2blacklist() default 0;
 
     String fallbackMethod();
 
