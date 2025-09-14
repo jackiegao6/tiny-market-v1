@@ -89,7 +89,7 @@ public class RafflePartakeService extends AbstractRafflePartake{
 
     @Override
     protected UserRaffleOrderEntity buildUserRaffleOrder(String userId, Long activityId, Date currentDate) {
-        ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activityId);
+        ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activityId);
         // 构建订单
         UserRaffleOrderEntity userRaffleOrder = new UserRaffleOrderEntity();
         userRaffleOrder.setUserId(userId);

@@ -39,7 +39,7 @@ public abstract class AbstractRafflePartake implements IRafflePartake {
         Date currentDate = new Date();
 
         // 1. 活动查询
-        ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activityId);
+        ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activityId);
 
         // 校验；活动状态
         if (!ActivityStateVO.open.equals(activityEntity.getState())) {

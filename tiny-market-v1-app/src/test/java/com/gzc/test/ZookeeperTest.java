@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @SpringBootTest
 public class ZookeeperTest {
 
-    @Resource
+    @Autowired(required = false)
     private CuratorFramework zookeeperClient;
 
     @Test

@@ -6,9 +6,9 @@ import com.gzc.types.enums.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
 public class DCCValueManageController implements IDCCValueManageController {
 
-    @Resource
+    @Autowired(required = false)
     private CuratorFramework zookeeperClient;
 
     private static final String BASE_CONFIG_PATH = "/big-market-dcc";
