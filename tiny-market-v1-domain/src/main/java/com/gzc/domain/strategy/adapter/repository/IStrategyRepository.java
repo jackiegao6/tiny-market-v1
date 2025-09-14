@@ -6,7 +6,7 @@ import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
 import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
 import com.gzc.domain.strategy.model.valobj.RuleWeightVO;
-import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardTreeRootVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 
 import java.util.Date;
@@ -34,6 +34,27 @@ public interface IStrategyRepository {
     StrategyRuleEntity queryStrategyRuleEntityByStrategyId(Long strategyId, String ruleModel);
 
 
+    /**
+     * domain: draw
+     */
+    String queryStrategyRuleValue(Long strategyId, String ruleModel);
+
+    Integer queryUserJoinCount(String userId, Long strategyId);
+
+    StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId);
+
+    StrategyAwardTreeRootVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
+
+    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
+
+    Boolean subtractionAwardStock(String cacheKey, Integer awardId);
+
+    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO);
+
+    Integer queryTodayUserRaffleCount(String userId, Long strategyId);
+
+
+
 
 
 
@@ -48,27 +69,10 @@ public interface IStrategyRepository {
 
     String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
 
-    String queryStrategyRuleValue(Long strategyId, String ruleModel);
-
-    StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId);
-
-    /**
-     * 根据规则树ID，查询树结构信息
-     *
-     * @param treeId 规则树ID
-     * @return 树结构信息
-     */
-    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
-
-    /**
-     * 扣减奖品库存
-     */
-    Boolean subtractionAwardStock(String cacheKey, Integer awardId);
 
     Boolean subtractionAwardStock(String cacheKey, Integer awardId, Date endDateTime);
 
 
-    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO);
 
     StrategyAwardStockKeyVO takeQueueValue();
 
@@ -77,15 +81,12 @@ public interface IStrategyRepository {
      */
     void updateStrategyAwardStock(Long strategyId, Integer awardId);
 
-    StrategyAwardEntity queryStrategyAwardEntity(Long strategyId, Integer awardId);
 
     Long queryStrategyIdByActivityId(Long activityId);
 
-    Integer queryTodayUserRaffleCount(String userId, Long strategyId);
 
     Map<String, Integer> queryTreeLockCount(String[] treeIds);
 
-    Integer queryUserScore(String userId, Long strategyId);
 
     List<RuleWeightVO> queryRuleWeightDetails(Long strategyId);
 

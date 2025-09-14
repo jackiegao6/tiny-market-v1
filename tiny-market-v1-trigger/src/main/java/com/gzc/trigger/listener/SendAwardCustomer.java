@@ -26,6 +26,7 @@ public class SendAwardCustomer {
     public void listener(String message) {
         try {
             // todo 发放奖品
+
 //            BaseEvent.EventMessage<SendAwardMessageEvent.SendAwardMessage> eventMessage = JSON.parseObject(message, new TypeReference<BaseEvent.EventMessage<SendAwardMessageEvent.SendAwardMessage>>() {
 //            }.getType());
 //            SendAwardMessageEvent.SendAwardMessage sendAwardMessage = eventMessage.getData();

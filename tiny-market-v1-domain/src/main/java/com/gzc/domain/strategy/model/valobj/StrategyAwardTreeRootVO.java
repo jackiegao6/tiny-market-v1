@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StrategyAwardRuleModelVO {
+public class StrategyAwardTreeRootVO {
 
-    private String ruleModels;
+    private String treeId;
 
 }

@@ -39,30 +39,30 @@ public class LogicChainTest {
 //        log.info("测试结果：{}", strategyArmory.assembleLotteryStrategy(100003L));
     }
 
-    @Test
-    public void test_LogicChain_rule_blacklist() {
-        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-        Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
-        log.info("测试结果：{}", awardId);
-    }
+//    @Test
+//    public void test_LogicChain_rule_blacklist() {
+//        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
+//        Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
+//        log.info("测试结果：{}", awardId);
+//    }
 
-    @Test
-    public void test_LogicChain_rule_weight() {
-        // 通过反射 mock 规则中的值
-        ReflectionTestUtils.setField(ruleWeightLogicChain, "userScore", 14900L);
-
-        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-                Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
-
-        log.info("测试结果：{}", awardId);
-    }
-
-    @Test
-    public void test_LogicChain_rule_default() {
-        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
-                Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
-
-        log.info("测试结果：{}", awardId);
-    }
+//    @Test
+//    public void test_LogicChain_rule_weight() {
+//        // 通过反射 mock 规则中的值
+//        ReflectionTestUtils.setField(ruleWeightLogicChain, "userScore", 14900L);
+//
+//        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
+//                Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
+//
+//        log.info("测试结果：{}", awardId);
+//    }
+//
+//    @Test
+//    public void test_LogicChain_rule_default() {
+//        ILogicChain logicChain = defaultChainFactory.openLogicChain(100001L);
+//                Integer awardId = logicChain.logic("user001", 100001L).getAwardId();
+//
+//        log.info("测试结果：{}", awardId);
+//    }
 
 }

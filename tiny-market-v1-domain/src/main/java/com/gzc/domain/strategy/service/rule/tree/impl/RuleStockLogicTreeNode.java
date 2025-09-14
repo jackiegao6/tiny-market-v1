@@ -37,18 +37,17 @@ public class RuleStockLogicTreeNode implements ILogicTreeNode {
                     .build());
 
             return DefaultTreeFactory.TreeActionEntity.builder()
-                    .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
+                    .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
                     .strategyAwardVO(DefaultTreeFactory.StrategyAwardVO.builder()
                             .awardId(awardId)
-                            .awardRuleValue(" ")
                             .build())
                     .build();
         }
 
-        // 如果库存不足，则直接返回放行
+        // 如果库存不足，则该奖品不能让你拿到
         log.warn("规则过滤-库存扣减-告警，库存不足。userId:{} strategyId:{} awardId:{}", userId, strategyId, awardId);
         return DefaultTreeFactory.TreeActionEntity.builder()
-                .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
+                .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
                 .build();
     }
 

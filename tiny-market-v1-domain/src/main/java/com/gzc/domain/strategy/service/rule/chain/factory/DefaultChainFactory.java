@@ -9,19 +9,17 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 工厂
- * @create 2024-01-20 10:54
  */
 @Service
 public class DefaultChainFactory {
 
     private final Map<String, ILogicChain> logicChainGroup;
-    protected IStrategyRepository repository;
+    protected IStrategyRepository strategyRepository;
 
     public DefaultChainFactory(Map<String, ILogicChain> logicChainGroup, IStrategyRepository repository) {
         this.logicChainGroup = logicChainGroup;
-        this.repository = repository;
+        this.strategyRepository = repository;
     }
 
     /**
@@ -30,26 +28,26 @@ public class DefaultChainFactory {
      * @param strategyId 策略ID
      * @return LogicChain
      */
-    public ILogicChain openLogicChain(Long strategyId) {
-        StrategyEntity strategy = repository.queryStrategyEntityByStrategyId(strategyId);
+    public ILogicChain buildLogicChain(Long strategyId) {
+        StrategyEntity strategy = strategyRepository.queryStrategyEntityByStrategyId(strategyId);
         String[] ruleModels = strategy.getRuleModels();
 
         // 如果未配置策略规则，则只装填一个默认责任链
         if (null == ruleModels || 0 == ruleModels.length)
             return logicChainGroup.get("default");
 
-        // 按照配置顺序装填用户配置的责任链；rule_blacklist、rule_weight 「注意此数据从Redis缓存中获取，如果更新库表，记得在测试阶段手动处理缓存」
-        ILogicChain logicChain = logicChainGroup.get(ruleModels[0]);
-        ILogicChain currentPointer = logicChain;
+        // 按照配置顺序装填用户配置的责任链；rule_blacklist、rule_weight
+        ILogicChain headerChain = logicChainGroup.get(ruleModels[0]);
+        ILogicChain pointer = headerChain;
         for (int i = 1; i < ruleModels.length; i++) {
             ILogicChain nextChain = logicChainGroup.get(ruleModels[i]);
-            currentPointer = currentPointer.appendNext(nextChain);
+            pointer = pointer.appendNext(nextChain);
         }
 
         // 责任链的最后装填默认责任链
-        currentPointer.appendNext(logicChainGroup.get("default"));
+        pointer.appendNext(logicChainGroup.get("default"));
 
-        return logicChain;
+        return headerChain;
     }
     @Data
     @Builder

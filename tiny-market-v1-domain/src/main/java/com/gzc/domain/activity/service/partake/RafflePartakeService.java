@@ -55,7 +55,6 @@ public class RafflePartakeService extends AbstractRafflePartake{
             activityAccountMonthEntity.setMonth(month);
             activityAccountMonthEntity.setMonthCount(activityAccountEntity.getMonthCount());
             activityAccountMonthEntity.setMonthCountSurplus(activityAccountEntity.getMonthCount());
-            activityRepository.queryNoUsedRaffleOrder(null);
         }
 
         // 查询日账户额度

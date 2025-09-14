@@ -4,7 +4,7 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
 import com.gzc.domain.strategy.model.valobj.RuleWeightVO;
-import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import com.gzc.domain.strategy.model.valobj.StrategyAwardTreeRootVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.chain.ILogicChain;
@@ -31,29 +31,25 @@ public class DefaultRaffleStrategyService extends AbstractRaffleStrategy impleme
 
     @Override
     public DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId) {
-        ILogicChain logicChain = defaultChainFactory.openLogicChain(strategyId);
-        return logicChain.logic(userId, strategyId);
+        ILogicChain headerChain = defaultChainFactory.buildLogicChain(strategyId);
+        return headerChain.logic(userId, strategyId);
     }
 
     @Override
     public DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Integer awardId, Long strategyId, Date endDateTime) {
-        StrategyAwardRuleModelVO strategyAwardRuleModelVO = strategyRepository.queryStrategyAwardRuleModelVO(strategyId, awardId);
-        if (null == strategyAwardRuleModelVO) {
+        StrategyAwardTreeRootVO treeRootVO = strategyRepository.queryStrategyAwardRuleModelVO(strategyId, awardId);
+        if (null == treeRootVO) {
             return DefaultTreeFactory.StrategyAwardVO.builder()
                     .awardId(awardId)
                     .build();
         }
-        RuleTreeVO ruleTreeVO = strategyRepository.queryRuleTreeVOByTreeId(strategyAwardRuleModelVO.getRuleModels());
+        RuleTreeVO ruleTreeVO = strategyRepository.queryRuleTreeVOByTreeId(treeRootVO.getTreeId());
         if (null == ruleTreeVO) {
-            throw new RuntimeException("存在抽奖策略配置的规则模型 Key，未在库表 rule_tree、rule_tree_node、rule_tree_line 配置对应的规则树信息 " + strategyAwardRuleModelVO.getRuleModels());
+            throw new RuntimeException("存在抽奖策略配置的规则模型 Key，未在库表 rule_tree、rule_tree_node、rule_tree_line 配置对应的规则树信息 " + treeRootVO.getTreeId());
         }
+
         IDecisionTreeEngine treeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
         return treeEngine.process(userId, strategyId, awardId, endDateTime);
-    }
-
-    @Override
-    public DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Integer awardId, Long strategyId) {
-        return raffleLogicTree(userId, awardId, strategyId, null);
     }
 
     @Override

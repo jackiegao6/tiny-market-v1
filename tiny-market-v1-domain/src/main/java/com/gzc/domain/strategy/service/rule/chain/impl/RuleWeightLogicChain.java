@@ -39,7 +39,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
             // 该策略并未配置权重规则
             return next().logic(userId, strategyId);
         }
-        // 1. 根据用户ID查询用户抽奖消耗的积分值，本章节我们先写死为固定的值。后续需要从数据库中查询。
+        // 1. 根据用户ID查询用户抽奖消耗的积分值
         Map<Long, String> analyticalValueGroup = getAnalyticalValue(ruleValue);
         if (null == analyticalValueGroup || analyticalValueGroup.isEmpty()) return null;
 
@@ -47,18 +47,17 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
         List<Long> analyticalSortedKeys = new ArrayList<>(analyticalValueGroup.keySet());
         Collections.sort(analyticalSortedKeys);
 
-        Integer userScore = strategyRepository.queryUserScore(userId, strategyId);
-
+        Integer userJoinCount = strategyRepository.queryUserJoinCount(userId, strategyId);
 
         // 3. 找出最小符合的值，也就是【4500 积分，能找到 4000:102,103,104,105】、【5000 积分，能找到 5000:102,103,104,105,106,107】
-        Long nextValue = analyticalSortedKeys.stream()
-                .filter(key -> userScore >= key)
+        Long suitableValue = analyticalSortedKeys.stream()
+                .filter(key -> userJoinCount >= key)
                 .findFirst()
                 .orElse(null);
 
         // 4. 权重抽奖
-        if (null != nextValue) {
-            Integer awardId = strategyDispatch.getRandomAwardId(strategyId, String.valueOf(nextValue));
+        if (null != suitableValue) {
+            Integer awardId = strategyDispatch.getRandomAwardId(strategyId, String.valueOf(suitableValue));
             log.info("抽奖责任链-权重接管 userId: {} strategyId: {} ruleModel: {} awardId: {}", userId, strategyId, ruleModel(), awardId);
             return DefaultChainFactory.StrategyAwardVO.builder()
                     .awardId(awardId)

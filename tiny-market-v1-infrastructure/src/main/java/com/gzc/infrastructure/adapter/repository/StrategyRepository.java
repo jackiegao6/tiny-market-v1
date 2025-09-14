@@ -123,23 +123,30 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel) {
+
+        String cacheKey = Constants.RedisKey.STRATEGY_RULE_MODE_KEY + ruleModel;
+        String ruleValue = redisService.getValue(cacheKey);
+        if (ruleValue != null) return ruleValue;
+
         StrategyRule strategyRule = new StrategyRule();
         strategyRule.setStrategyId(strategyId);
         strategyRule.setAwardId(awardId);
         strategyRule.setRuleModel(ruleModel);
 
-        return strategyRuleDao.queryStrategyRuleValue(strategyRule);
+        ruleValue = strategyRuleDao.queryStrategyRuleValue(strategyRule);
+        redisService.setValue(cacheKey, ruleValue);
+        return ruleValue;
     }
 
     @Override
-    public StrategyAwardRuleModelVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId) {
+    public StrategyAwardTreeRootVO queryStrategyAwardRuleModelVO(Long strategyId, Integer awardId) {
         StrategyAward strategyAward = new StrategyAward();
         strategyAward.setStrategyId(strategyId);
         strategyAward.setAwardId(awardId);
 
-        String ruleModels = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
-        return StrategyAwardRuleModelVO.builder()
-                .ruleModels(ruleModels)
+        String treeId = strategyAwardDao.queryStrategyAwardRuleModels(strategyAward);
+        return StrategyAwardTreeRootVO.builder()
+                .treeId(treeId)
                 .build();
     }
 
@@ -328,7 +335,7 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public Integer queryTodayUserRaffleCount(String userId, Long strategyId) {
-        // 活动ID
+        // 活动ID todo threadLocal
         Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
         // 封装参数
         RaffleActivityAccountDay raffleActivityAccountDayReq = new RaffleActivityAccountDay();
@@ -357,7 +364,8 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public Integer queryUserScore(String userId, Long strategyId) {
+    public Integer queryUserJoinCount(String userId, Long strategyId) {
+        // todo 写到threadLocal中
         Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
         RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(RaffleActivityAccount.builder()
                 .userId(userId)

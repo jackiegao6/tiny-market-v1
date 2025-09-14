@@ -49,12 +49,14 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
          * 责任链处理的是不同的抽奖【黑名单、权重、默认】，处理完的抽奖结果
          * 如果是默认抽奖则需要进行库存、次数等校验，并给出最终发奖结果。
          */
+        // 根据该用户的抽奖次数 从对应的奖品池中 拿到某一奖品
         DefaultChainFactory.StrategyAwardVO chainStrategyAwardVO = raffleLogicChain(userId, strategyId);
         if (!DefaultChainFactory.LogicModel.RULE_DEFAULT.getCode().equals(chainStrategyAwardVO.getLogicModel())) {
             // 被权重抽奖或黑名单抽奖规则接管
             return buildRaffleAwardEntity(strategyId, chainStrategyAwardVO.getAwardId(), chainStrategyAwardVO.getAwardRuleValue());
         }
 
+        // 至此拿到了某一奖品id 再判断这个奖品能不能给(次数限制、库存限制)
         DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO = raffleLogicTree(userId, chainStrategyAwardVO.getAwardId(), strategyId, raffleFactorEntity.getEndDateTime());
 
         return buildRaffleAwardEntity(strategyId, treeStrategyAwardVO.getAwardId(), treeStrategyAwardVO.getAwardRuleValue());
@@ -64,15 +66,25 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         StrategyAwardEntity strategyAward = strategyRepository.queryStrategyAwardEntity(strategyId, awardId);
         return RaffleAwardEntity.builder()
                 .awardId(awardId)
+                // todo 兜底奖品 的随机积分值 还没处理
                 .awardConfig(awardConfig)
                 .awardTitle(strategyAward.getAwardTitle())
                 .sort(strategyAward.getSort())
                 .build();
+        /**
+         * {
+         * 	"code": "0000",
+         * 	"info": "调用成功",
+         * 	"data": {
+         * 		"awardId": 101,
+         * 		"awardTitle": "随机积分",
+         * 		"awardIndex": 1
+         * 	    }
+         * }
+         */
     }
 
     public abstract DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId);
-
-    public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Integer awardId, Long strategyId);
 
     public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Integer awardId, Long strategyId, Date endDateTime);
 

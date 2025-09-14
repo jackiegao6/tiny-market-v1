@@ -5,16 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 规则过滤校验类型值对象
- * @create 2024-01-06 11:10
  */
 @Getter
 @AllArgsConstructor
 public enum RuleLogicCheckTypeVO {
 
-    ALLOW("0000", "放行；执行后续的流程，不受规则引擎影响"),
-    TAKE_OVER("0001","接管；后续的流程，受规则引擎执行结果影响"),
+    ALLOW("0000", "放行；该奖品id符合当前规则要求"),
+    TAKE_OVER("0001","接管；该奖品id不符合当前规则要求，一般返回兜底奖品"),
     ;
 
     private final String code;

@@ -69,8 +69,10 @@ public class AwardRepository implements IAwardRepository {
             dbRouter.doRouter(userAwardRecordEntity.getUserId());
             transactionTemplate.execute(status -> {
                 try {
+                    // 写入用户中奖记录
                     userAwardRecordDao.insert(record);
                     taskDao.insert(task);
+                    // 至此用户抽奖记录状态为used
                     int res = userRaffleOrderDao.updateUserRaffleOrderStateUsed(userRaffleOrder);
                     if (res != 1){
                         status.setRollbackOnly();

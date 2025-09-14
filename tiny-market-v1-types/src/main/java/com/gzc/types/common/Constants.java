@@ -26,6 +26,10 @@ public class Constants {
         public static String STRATEGY_AWARD_KEY = "big_market_strategy:award_key:";
 
 
+        /**
+         * domain: draw
+         */
+        public static String STRATEGY_RULE_MODE_KEY = "big_market_strategy:rule_model_key:";
         public static String STRATEGY_ALGORITHM_KEY = "big_market_strategy:algorithm_key";
         public static String STRATEGY_RATE_RANGE_KEY = "big_market_strategy:rate_range_key:";
         public static String RULE_TREE_VO_KEY = "rule_tree_vo_key_";
