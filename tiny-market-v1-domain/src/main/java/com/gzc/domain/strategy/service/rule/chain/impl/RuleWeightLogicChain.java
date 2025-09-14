@@ -1,7 +1,7 @@
 package com.gzc.domain.strategy.service.rule.chain.impl;
 
 import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.chain.AbstractLogicChain;
 import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.gzc.types.common.Constants;

@@ -25,7 +25,7 @@ public interface IStrategyRepository {
 
     boolean hasSearchRateTable(String cacheStrategyAwards);
 
-    void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable);
+    <K, V> void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<K, V> strategyAwardSearchRateTable);
 
     void cacheLotteryAward(String cacheKey, Integer awardCount);
 
@@ -88,5 +88,9 @@ public interface IStrategyRepository {
     Integer queryUserScore(String userId, Long strategyId);
 
     List<RuleWeightVO> queryRuleWeightDetails(Long strategyId);
+
+    <K, V> Map<K, V> getMap(String key);
+
+    String cacheAlgorithmKey(String name);
 
 }

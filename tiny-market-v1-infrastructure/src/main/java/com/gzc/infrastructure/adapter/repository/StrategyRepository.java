@@ -174,11 +174,11 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable) {
+    public <K, V> void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<K, V> strategyAwardSearchRateTable) {
         // 1. 存储抽奖策略范围值，如10000，用于生成1000以内的随机数
         redisService.setValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + armoryAwardsKey, rateRange);
         // 2. 存储概率查找表
-        Map<Integer, Integer> cacheRateTable = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + armoryAwardsKey);
+        Map<K, V> cacheRateTable = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + armoryAwardsKey);
         if (cacheRateTable.isEmpty()) {
             cacheRateTable.putAll(strategyAwardSearchRateTable);
         }
@@ -407,5 +407,18 @@ public class StrategyRepository implements IStrategyRepository {
         // 设置缓存 在活动下架时同一清空缓存
         redisService.setValue(cacheKey, ruleWeightVOS);
         return ruleWeightVOS;
+    }
+
+    @Override
+    public <K, V> Map<K, V> getMap(String key) {
+        return redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + key);
+    }
+
+    @Override
+    public String cacheAlgorithmKey(String name) {
+        Object value = redisService.getValue(Constants.RedisKey.STRATEGY_ALGORITHM_KEY);
+        if (value != null) return (String) value;
+        redisService.setValue(Constants.RedisKey.STRATEGY_ALGORITHM_KEY, name);
+        return null;
     }
 }

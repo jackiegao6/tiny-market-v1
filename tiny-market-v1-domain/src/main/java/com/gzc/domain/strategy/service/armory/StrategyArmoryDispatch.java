@@ -4,7 +4,8 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.model.entity.StrategyRuleEntity;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.algorithm.AbstractAlgorithm;
+import com.gzc.domain.strategy.service.armory.algorithm.IAlgorithm;
 import com.gzc.types.common.Constants;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -26,6 +26,10 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
 
     @Resource
     private IStrategyRepository strategyRepository;
+    @Resource
+    private Map<String, IAlgorithm> algorithmMap;
+    // map容量大于 ALGORITHM_THRESHOLD_VALUE 转为算法二 (格子区间)
+    private final Integer ALGORITHM_THRESHOLD_VALUE = 10000;
 
     @Override
     public boolean assembleLotteryStrategyByActivityId(Long activityId) {
@@ -103,42 +107,28 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         // 4. 用 1 % 0.0001 获得概率范围，百分位、千分位、万分位
         BigDecimal rateRange = totalRate.divide(minRate, 0, RoundingMode.CEILING);
 
-        // 5. 生成策略奖品概率查找表「这里指需要在list集合中，存放上对应的奖品占位即可，占位越多等于概率越高」
-        List<Integer> strategyAwardSearchRateList = new ArrayList<>(rateRange.intValue());
-        for (StrategyAwardEntity strategyAward : strategyAwardEntities) {
-            Integer awardId = strategyAward.getAwardId();
-            BigDecimal awardRate = strategyAward.getAwardRate();
-            // 计算出每个概率值需要存放到查找表的数量，循环填充
-            for (int i = 0; i < rateRange.multiply(awardRate).setScale(0, RoundingMode.CEILING).intValue(); i++) {
-                strategyAwardSearchRateList.add(awardId);
-            }
+        if (rateRange.intValue() <= ALGORITHM_THRESHOLD_VALUE){
+            String name = AbstractAlgorithm.Algorithm.O1.getName();
+            algorithmMap.get(name).armoryAlgorithm(strategyKey, strategyAwardEntities, rateRange);
+            strategyRepository.cacheAlgorithmKey(name);
+        }else {
+            String name = AbstractAlgorithm.Algorithm.OLogN.getName();
+            algorithmMap.get(name).armoryAlgorithm(strategyKey, strategyAwardEntities, rateRange);
+            strategyRepository.cacheAlgorithmKey(name);
         }
-        Collections.shuffle(strategyAwardSearchRateList);
-
-        Map<Integer, Integer> shuffleStrategyAwardSearchRateTable = new HashMap<>();
-        for (int i = 0; i < strategyAwardSearchRateList.size(); i++) {
-            shuffleStrategyAwardSearchRateTable.put(i, strategyAwardSearchRateList.get(i));
-        }
-
-        // 6. 存放到 Redis
-        strategyRepository.storeSearchRateTable(strategyKey, shuffleStrategyAwardSearchRateTable.size(), shuffleStrategyAwardSearchRateTable);
     }
-
-
 
     @Override
     public Integer getRandomAwardId(Long strategyId) {
-        // 分布式部署下，不一定为当前应用做的策略装配。也就是值不一定会保存到本应用，而是分布式应用，所以需要从 Redis 中获取。
-        int rateRange = strategyRepository.getRateRange(strategyId);
-        // 通过生成的随机值，获取概率值奖品查找表的结果
-        return strategyRepository.getRandomAward(strategyId, new SecureRandom().nextInt(rateRange));
+        String name = strategyRepository.cacheAlgorithmKey(String.valueOf(strategyId));
+        return algorithmMap.get(name).raffleAlgorithm(String.valueOf(strategyId));
     }
 
     @Override
     public Integer getRandomAwardId(Long strategyId, String ruleWeightValue) {
         String key = String.valueOf(strategyId).concat("_").concat(ruleWeightValue);
-        int rateRange = strategyRepository.getRateRange(key);
-        return strategyRepository.getRandomAward(key, new SecureRandom().nextInt(rateRange));
+        String name = strategyRepository.cacheAlgorithmKey(key);
+        return algorithmMap.get(name).raffleAlgorithm(String.valueOf(strategyId));
     }
 
     @Override

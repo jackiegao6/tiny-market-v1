@@ -6,7 +6,7 @@ import com.gzc.domain.strategy.model.valobj.RuleTreeVO;
 import com.gzc.domain.strategy.model.valobj.RuleWeightVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.chain.ILogicChain;
 import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.gzc.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;

@@ -3,7 +3,7 @@ package com.gzc.domain.strategy.service.rule.tree.impl;
 import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import com.gzc.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.tree.ILogicTreeNode;
 import com.gzc.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.gzc.test.domain.strategy;
 
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.infrastructure.redis.IRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;

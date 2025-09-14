@@ -4,7 +4,7 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.RaffleAwardEntity;
 import com.gzc.domain.strategy.model.entity.RaffleFactorEntity;
 import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
-import com.gzc.domain.strategy.service.dispatch.IStrategyDispatch;
+import com.gzc.domain.strategy.service.armory.IStrategyDispatch;
 import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.gzc.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import com.gzc.types.enums.ResponseCode;
