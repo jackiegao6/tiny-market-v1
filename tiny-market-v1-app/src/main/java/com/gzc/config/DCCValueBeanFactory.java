@@ -9,6 +9,7 @@ import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,11 +24,12 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
     private static final String BASE_CONFIG_PATH = "/big-market-dcc";
     private static final String BASE_CONFIG_PATH_CONFIG = BASE_CONFIG_PATH + "/config";
 
-    private final CuratorFramework zookeeperClient;
+    @Autowired(required = false)
+    private CuratorFramework zookeeperClient;
     private final Map<String, Object> dccObjMap = new HashMap<>();
 
-    public DCCValueBeanFactory(CuratorFramework zookeeperClient) throws Exception {
-        this.zookeeperClient = zookeeperClient;
+    public DCCValueBeanFactory() throws Exception {
+        if (zookeeperClient == null)return;
 
         if (zookeeperClient.checkExists().forPath(BASE_CONFIG_PATH_CONFIG) == null){
             zookeeperClient.create().creatingParentsIfNeeded().forPath(BASE_CONFIG_PATH_CONFIG);
@@ -66,6 +68,8 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (zookeeperClient == null)
+            return bean;
 
         Class<?> targetBeanClass = bean.getClass();
         Object targetBean = bean;

@@ -25,6 +25,9 @@ spring:
       send_award: send_award
       send_rebate: send_rebate
       credit_adjust_success: credit_adjust_success
+  cloud:
+    zookeeper:
+      enabled: false
 
 # 线程池配置
 thread:
@@ -121,7 +124,8 @@ dubbo:
     version: 1.0
   registry:
     id: nacos-registry
-    address: nacos://192.168.31.25:8848
+#    address: nacos://192.168.31.25:8848
+    address: N/A
   protocol:
     name: dubbo
     port: -1
@@ -132,7 +136,7 @@ zookeeper:
   sdk:
     config:
       # 状态；true = 开启、false 关闭
-      enable: true
+      enable: false
       connect-string: 192.168.31.25:2181
       base-sleep-time-ms: 1000
       max-retries: 3
