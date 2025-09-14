@@ -20,7 +20,7 @@ public class ActivityArmory implements IActivityArmory, IActivityDispatch {
     private IActivityRepository activityRepository;
 
     @Override
-    public void assembleActivitySkuByActivityId(Long activityId) {
+    public boolean assembleActivitySkuByActivityId(Long activityId) {
         // 0. 缓存该活动的信息
         ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activityId);
         // 1. 缓存该活动配置的所有sku组
@@ -29,18 +29,6 @@ public class ActivityArmory implements IActivityArmory, IActivityDispatch {
             // 2. 缓存该sku组 对应的个人抽取次数信息
             ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
         }
-    }
-
-    @Override
-    public boolean assembleActivitySku(Long sku) {
-        ActivitySkuEntity activitySkuEntity = activityRepository.queryActivitySku(sku);
-        if (activitySkuEntity == null) return false;
-        // todo
-//        cacheActivitySkuStockCount(sku, activitySkuEntity.getStockCountSurplus());
-
-//        activityRepository.queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
-        activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
-
         return true;
     }
 

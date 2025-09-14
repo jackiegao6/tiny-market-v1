@@ -32,7 +32,7 @@ public class MarketControllerTest {
      */
     @Before
     public void setUp() {
-        log.info("装配活动：{}", activityArmory.assembleActivitySku(9011L));
+//        log.info("装配活动：{}", activityArmory.assembleActivitySku(9011L));
     }
 
     @Test

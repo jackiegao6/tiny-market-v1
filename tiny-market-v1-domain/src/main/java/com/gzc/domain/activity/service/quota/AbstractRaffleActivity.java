@@ -37,7 +37,7 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         // 1. 通过sku查询活动信息
         ActivitySkuEntity activitySkuEntity = activityRepository.queryActivitySku(activityShopCartEntity.getSku());
         // 2. 查询活动信息
-        ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
+        ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activitySkuEntity.getActivityId());
         // 3. 查询次数信息（用户在活动上可参与的次数）
         ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
 
@@ -67,7 +67,7 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         // 2.1 通过sku查询活动信息
         ActivitySkuEntity activitySkuEntity = activityRepository.queryActivitySku(sku);
         // 2.2 查询活动信息
-        ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
+        ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activitySkuEntity.getActivityId());
         // 2.3 查询次数信息（用户在活动上可参与的次数）
         ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
 

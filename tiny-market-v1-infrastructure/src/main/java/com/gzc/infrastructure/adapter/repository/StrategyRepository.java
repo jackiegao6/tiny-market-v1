@@ -51,19 +51,17 @@ public class StrategyRepository implements IStrategyRepository {
     @Resource
     private IRaffleActivityAccountDao raffleActivityAccountDao;
 
-
     /**
      * 根据策略id
      * 获取该策略下的奖品信息
      */
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
-        // 优先从缓存获取
+
         String cacheKey = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY + strategyId;
         List<StrategyAwardEntity> strategyAwardEntities = redisService.getValue(cacheKey);
         if (null != strategyAwardEntities && !strategyAwardEntities.isEmpty()) return strategyAwardEntities;
 
-        // 从库中获取数据
         List<StrategyAward> strategyAwards = strategyAwardDao.queryStrategyAwardListByStrategyId(strategyId);
         strategyAwardEntities = new ArrayList<>(strategyAwards.size());
         for (StrategyAward strategyAward : strategyAwards) {
@@ -170,13 +168,13 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public boolean hasStrategyAwardSearchRateTable(String armoryAwardsKey) {
-        Map<Integer, Integer> cacheRateTable = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + armoryAwardsKey);
+    public boolean hasSearchRateTable(String cacheStrategyAwards) {
+        Map<Integer, Integer> cacheRateTable = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + cacheStrategyAwards);
         return !cacheRateTable.isEmpty();
     }
 
     @Override
-    public void storeStrategyAwardSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable) {
+    public void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable) {
         // 1. 存储抽奖策略范围值，如10000，用于生成1000以内的随机数
         redisService.setValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + armoryAwardsKey, rateRange);
         // 2. 存储概率查找表

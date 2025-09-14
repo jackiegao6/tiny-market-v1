@@ -10,17 +10,22 @@ public class Constants {
 
     public static class RedisKey {
         /**
-         * domain: armory
+         * domain: activity_armory
          */
         public static String ACTIVITY_INFO_KEY = "big_market_activity:activity_info_key:";
         public static String ACTIVITY_SKU_STOCK_SURPLUS_KEY = "big_market_activity:sku_stock_surplus_key:";
         public static String ACTIVITY_PERSONAL_LIMIT_KEY = "big_market_activity:personal_limit_key:";
 
 
-        public static String STRATEGY_KEY = "big_market_strategy:strategy_key:";
-        public static String STRATEGY_AWARD_KEY = "big_market_strategy:award_key:";
+        /**
+         * domain: strategy_armory
+         */
         public static String STRATEGY_AWARD_LIST_KEY = "big_market_strategy:awards_list_key:";
+        public static String STRATEGY_KEY = "big_market_strategy:strategy_key:";
         public static String STRATEGY_RATE_TABLE_KEY = "big_market_strategy:rate_table_key:";
+        public static String STRATEGY_AWARD_KEY = "big_market_strategy:award_key:";
+
+
         public static String STRATEGY_RATE_RANGE_KEY = "big_market_strategy:rate_range_key:";
         public static String RULE_TREE_VO_KEY = "rule_tree_vo_key_";
         public static String STRATEGY_AWARD_COUNT_KEY = "big_market_strategy:award_count_key:";

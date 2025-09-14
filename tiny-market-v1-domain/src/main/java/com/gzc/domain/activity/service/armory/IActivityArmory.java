@@ -8,8 +8,5 @@ package com.gzc.domain.activity.service.armory;
  */
 public interface IActivityArmory {
 
-    @Deprecated
-    boolean assembleActivitySku(Long sku);
-
-    void assembleActivitySkuByActivityId(Long activityId);
+    boolean assembleActivitySkuByActivityId(Long activityId);
 }

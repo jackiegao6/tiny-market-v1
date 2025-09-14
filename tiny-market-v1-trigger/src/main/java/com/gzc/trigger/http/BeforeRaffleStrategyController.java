@@ -60,9 +60,9 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
     public Response<Boolean> armory(@RequestParam Long activityId) {
         try {
             // 1. 活动装配 活动本身的信息 活动总次数的统计量 活动涉及的sku的库存
-            activityArmory.assembleActivitySkuByActivityId(activityId);
+            boolean res_activity = activityArmory.assembleActivitySkuByActivityId(activityId);
             // 2. 策略装配 该策略涉及到的奖品列表信息 各个奖品的库存 该策略生成的用于抽奖的哈希表
-            strategyArmory.assembleLotteryStrategyByActivityId(activityId);
+            boolean res_strategy = strategyArmory.assembleLotteryStrategyByActivityId(activityId);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())

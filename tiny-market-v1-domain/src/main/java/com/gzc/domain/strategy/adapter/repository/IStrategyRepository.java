@@ -14,15 +14,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 策略服务仓储接口
- * @create 2023-12-23 09:33
  */
 public interface IStrategyRepository {
 
+    /**
+     * domain: armory
+     */
     List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId);
 
-    void storeStrategyAwardSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable);
+    boolean hasSearchRateTable(String cacheStrategyAwards);
+
+    void storeSearchRateTable(String armoryAwardsKey, Integer rateRange, Map<Integer, Integer> strategyAwardSearchRateTable);
+
+    void cacheLotteryAward(String cacheKey, Integer awardCount);
+
+    StrategyEntity queryStrategyEntityByStrategyId(Long strategyId);
+
+    StrategyRuleEntity queryStrategyRuleEntityByStrategyId(Long strategyId, String ruleModel);
+
+
+
+
+
 
     Integer getRandomAward(Long strategyId, Integer rateKey);
 
@@ -31,12 +45,6 @@ public interface IStrategyRepository {
     int getRateRange(Long strategyId);
 
     int getRateRange(String key);
-
-    StrategyEntity queryStrategyEntityByStrategyId(Long strategyId);
-
-    StrategyRuleEntity queryStrategyRuleEntityByStrategyId(Long strategyId, String ruleModel);
-
-    boolean hasStrategyAwardSearchRateTable(String armoryAwardsKey);
 
     String queryStrategyRuleValue(Long strategyId, Integer awardId, String ruleModel);
 
@@ -51,11 +59,6 @@ public interface IStrategyRepository {
      * @return 树结构信息
      */
     RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
-
-    /**
-     * 缓存奖品库存
-     */
-    void cacheLotteryAward(String cacheKey, Integer awardCount);
 
     /**
      * 扣减奖品库存
