@@ -28,10 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -225,7 +222,7 @@ public class MarketController implements IMarketController {
         }
     }
 
-
+    @RequestMapping(value = "/query_user_activity_account", method = RequestMethod.POST)
     @Override
     public Response<BigDecimal> queryCreditAccount(String userId) {
         try {
@@ -246,6 +243,7 @@ public class MarketController implements IMarketController {
         }
     }
 
+    @RequestMapping(value = "/query_sku_product_list_by_activity_id", method = RequestMethod.POST)
     @Override
     public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
         try {
@@ -288,8 +286,9 @@ public class MarketController implements IMarketController {
         }
     }
 
+    @RequestMapping(value = "/credit_pay_exchange_sku", method = RequestMethod.POST)
     @Override
-    public Response<Boolean> creditExchangeSku(SkuProductShopCartRequestDTO requestDTO) {
+    public Response<Boolean> creditExchangeSku(@RequestBody SkuProductShopCartRequestDTO requestDTO) {
         try {
             // 1. 创建积分兑换sku抽奖次数的 待支付订单
             UnpaidActivityOrderEntity skuRechargeOrder = raffleQuotaService.createSkuRechargeOrder(SkuRechargeEntity.builder()

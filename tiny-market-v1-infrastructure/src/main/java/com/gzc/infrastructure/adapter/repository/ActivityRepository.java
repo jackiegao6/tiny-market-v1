@@ -126,13 +126,14 @@ public class ActivityRepository implements IActivityRepository {
         try {
             // 订单对象
             ActivityOrderEntity activityOrderEntity = createOrderAggregate.getActivityOrderEntity();
+
             RaffleActivityOrder raffleActivityOrder = new RaffleActivityOrder();
             raffleActivityOrder.setUserId(activityOrderEntity.getUserId());
             raffleActivityOrder.setSku(activityOrderEntity.getSku());
             raffleActivityOrder.setActivityId(activityOrderEntity.getActivityId());
             raffleActivityOrder.setActivityName(activityOrderEntity.getActivityName());
             raffleActivityOrder.setStrategyId(activityOrderEntity.getStrategyId());
-            raffleActivityOrder.setOrderId(activityOrderEntity.getOrderId());
+            raffleActivityOrder.setOrderId(activityOrderEntity.getSkuRechargeOrderId());
             raffleActivityOrder.setOrderTime(activityOrderEntity.getOrderTime());
             // todo bug包括下面 目前每次往总账户充 都充 以activity_count_id为索引的数量 但是这个索引对应的是每个用户抽奖最多的限额
             raffleActivityOrder.setTotalCount(createOrderAggregate.getTotalCount());
@@ -209,7 +210,7 @@ public class ActivityRepository implements IActivityRepository {
             raffleActivityOrder.setActivityId(activityOrderEntity.getActivityId());
             raffleActivityOrder.setActivityName(activityOrderEntity.getActivityName());
             raffleActivityOrder.setStrategyId(activityOrderEntity.getStrategyId());
-            raffleActivityOrder.setOrderId(activityOrderEntity.getOrderId());
+            raffleActivityOrder.setOrderId(activityOrderEntity.getSkuRechargeOrderId());
             raffleActivityOrder.setOrderTime(activityOrderEntity.getOrderTime());
             raffleActivityOrder.setTotalCount(createOrderAggregate.getTotalCount());
             raffleActivityOrder.setDayCount(createOrderAggregate.getDayCount());
@@ -675,6 +676,7 @@ public class ActivityRepository implements IActivityRepository {
         RaffleActivityOrder raffleActivityOrderReq = new RaffleActivityOrder();
         raffleActivityOrderReq.setUserId(skuRechargeEntity.getUserId());
         raffleActivityOrderReq.setSku(skuRechargeEntity.getSku());
+
         RaffleActivityOrder raffleActivityOrderRes = raffleActivityOrderDao.queryUnpaidActivityOrder(raffleActivityOrderReq);
         if (null == raffleActivityOrderRes) return null;
         return UnpaidActivityOrderEntity.builder()

@@ -13,8 +13,8 @@ public class DefaultActivityChainFactory {
     private final IActionChain headChain;
 
     public DefaultActivityChainFactory(Map<String, IActionChain> actionChainMap) {
-        headChain = actionChainMap.get(ActionModel.activity_base_action.code);
-        headChain.appendNext(actionChainMap.get(ActionModel.activity_sku_stock_action.code));
+        headChain = actionChainMap.get(ActionModel.activity_base_action.getCode());
+        headChain.appendNext(actionChainMap.get(ActionModel.activity_sku_stock_action.getCode()));
     }
 
     public IActionChain openActionChain(){

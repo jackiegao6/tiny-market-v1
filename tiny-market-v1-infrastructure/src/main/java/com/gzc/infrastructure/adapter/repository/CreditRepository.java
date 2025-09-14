@@ -50,11 +50,10 @@ public class CreditRepository implements ICreditRepository {
         UserCreditAccount userCreditAccountReq = new UserCreditAccount();
         userCreditAccountReq.setUserId(userId);
         userCreditAccountReq.setTotalAmount(creditAccountEntity.getAdjustAmount());
-        // 知识；仓储往上有业务语义，仓储往下到 dao 操作是没有业务语义的。所以不用在乎这块使用的字段名称，直接用持久化对象即可。
         userCreditAccountReq.setAvailableAmount(creditAccountEntity.getAdjustAmount());
         userCreditAccountReq.setAccountStatus(AccountStatusVO.OPEN.getCode());
 
-        // 积分订单
+        // 2. 新增 积分增加订单
         UserCreditOrder userCreditOrderReq = new UserCreditOrder();
         userCreditOrderReq.setUserId(creditOrderEntity.getUserId());
         userCreditOrderReq.setOrderId(creditOrderEntity.getOrderId());
@@ -63,6 +62,7 @@ public class CreditRepository implements ICreditRepository {
         userCreditOrderReq.setTradeAmount(creditOrderEntity.getTradeAmount());
         userCreditOrderReq.setOutBusinessNo(creditOrderEntity.getOutBusinessNo());
 
+        // 3. 新增 积分增加任务 状态: create
         Task task = new Task();
         task.setUserId(creditAdjustTaskEntity.getUserId());
         task.setTopic(creditAdjustTaskEntity.getTopic());

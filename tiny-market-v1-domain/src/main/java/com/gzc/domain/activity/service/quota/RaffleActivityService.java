@@ -33,7 +33,7 @@ public class RaffleActivityService extends AbstractRaffleActivity implements ISk
         activityOrderEntity.setActivityName(activityEntity.getActivityName());
         activityOrderEntity.setStrategyId(activityEntity.getStrategyId());
         // 公司里一般会有专门的雪花算法UUID服务，我们这里直接生成个12位就可以了。
-        activityOrderEntity.setOrderId(RandomStringUtils.randomNumeric(12));
+        activityOrderEntity.setSkuRechargeOrderId(RandomStringUtils.randomNumeric(12));
         activityOrderEntity.setOrderTime(new Date());
         activityOrderEntity.setTotalCount(activityCountEntity.getTotalCount());
         activityOrderEntity.setDayCount(activityCountEntity.getDayCount());

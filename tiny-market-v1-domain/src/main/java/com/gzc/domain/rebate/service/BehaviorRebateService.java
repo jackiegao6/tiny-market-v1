@@ -30,21 +30,21 @@ public class BehaviorRebateService implements IBehaviorRebateService {
     @Override
     public List<String> createRebateOrder(BehaviorEntity behaviorEntity) {
         String userId = behaviorEntity.getUserId();
+        String outBusinessNo = behaviorEntity.getOutBusinessNo();
 
         // 1. 查询签到 返利配置
         List<DailyBehaviorRebateVO> dailyBehaviorRebateVOS = behaviorRebateRepository.queryDailyBehaviorRebateConfig(behaviorEntity.getBehaviorVO());
         if (null == dailyBehaviorRebateVOS || dailyBehaviorRebateVOS.isEmpty()) return new ArrayList<>();
 
         // 2. 构建聚合对象
-        List<String> orderIds = new ArrayList<>();
+        List<String> rebateOrderIds = new ArrayList<>();
         List<BehaviorRebateAggregate> behaviorRebateAggregates = new ArrayList<>();
         for (DailyBehaviorRebateVO dailyBehaviorRebateVO : dailyBehaviorRebateVOS) {
-            String outBusinessNo = behaviorEntity.getOutBusinessNo();
             String bizId = userId + Constants.UNDERLINE + dailyBehaviorRebateVO.getRebateType() + Constants.UNDERLINE + outBusinessNo;
-            String orderId = RandomStringUtils.randomNumeric(12);
+            String rebateOrderId = RandomStringUtils.randomNumeric(12);
             BehaviorRebateOrderEntity behaviorRebateOrderEntity = BehaviorRebateOrderEntity.builder()
                     .userId(userId)
-                    .orderId(orderId)
+                    .orderId(rebateOrderId)
                     .behaviorType(dailyBehaviorRebateVO.getBehaviorType())
                     .rebateDesc(dailyBehaviorRebateVO.getRebateDesc())
                     .rebateType(dailyBehaviorRebateVO.getRebateType())
@@ -52,7 +52,7 @@ public class BehaviorRebateService implements IBehaviorRebateService {
                     .outBusinessNo(outBusinessNo)
                     .bizId(bizId)
                     .build();
-            orderIds.add(orderId);
+            rebateOrderIds.add(rebateOrderId);
 
             // MQ + 任务
             SendRebateMessageEvent.RebateMessage messageBody = SendRebateMessageEvent.RebateMessage.builder()
@@ -83,7 +83,7 @@ public class BehaviorRebateService implements IBehaviorRebateService {
         // 3. 存储聚合对象数据
         behaviorRebateRepository.saveUserRebateRecord(userId, behaviorRebateAggregates);
 
-        return orderIds;
+        return rebateOrderIds;
     }
 
 

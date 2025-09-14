@@ -1,6 +1,5 @@
 package com.gzc.domain.activity.service.quota;
 
-import com.alibaba.fastjson.JSON;
 import com.gzc.domain.activity.adapter.repository.IActivityRepository;
 import com.gzc.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.gzc.domain.activity.model.entity.*;
@@ -33,20 +32,6 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
     }
 
     @Override
-    public ActivityOrderEntity createRaffleActivityOrder(ActivityShopCartEntity activityShopCartEntity) {
-        // 1. 通过sku查询活动信息
-        ActivitySkuEntity activitySkuEntity = activityRepository.queryActivitySku(activityShopCartEntity.getSku());
-        // 2. 查询活动信息
-        ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activitySkuEntity.getActivityId());
-        // 3. 查询次数信息（用户在活动上可参与的次数）
-        ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
-
-        log.info("查询结果：{} {} {}", JSON.toJSONString(activitySkuEntity), JSON.toJSONString(activityEntity), JSON.toJSONString(activityCountEntity));
-
-        return ActivityOrderEntity.builder().build();
-    }
-
-    @Override
     public UnpaidActivityOrderEntity createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity) {
 
         // 1. 参数校验
@@ -57,11 +42,9 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
 
-        // 2. 查询未支付订单「一个月以内的未支付订单」
+        // 2. 查询1h内未支付的 充值sku次数订单
         UnpaidActivityOrderEntity unpaidCreditOrder =  activityRepository.queryUnpaidActivityOrder(skuRechargeEntity);
         if (null != unpaidCreditOrder) return unpaidCreditOrder;
-
-
 
         // 2. 查询基础信息
         // 2.1 通过sku查询活动信息
@@ -69,14 +52,14 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         // 2.2 查询活动信息
         ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activitySkuEntity.getActivityId());
         // 2.3 查询次数信息（用户在活动上可参与的次数）
-        ActivityCountEntity activityCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
+        ActivityCountEntity personalCountEntity = activityRepository.queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
 
         // 3. 扣减活动库存
         IActionChain actionChain = defaultActivityChainFactory.openActionChain();
-        actionChain.logic(activitySkuEntity, activityEntity, activityCountEntity);
+        actionChain.logic(activitySkuEntity, activityEntity, personalCountEntity);
 
         // 4. 构建聚合对象
-        CreateQuotaOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);
+        CreateQuotaOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, personalCountEntity);
 
         // 5. 增加用户额度
         ICreditTradePolicy tradePolicy = creditTradePolicyMap.get(skuRechargeEntity.getOrderTradeType().getCode());
@@ -86,7 +69,7 @@ public abstract class AbstractRaffleActivity implements IRaffleOrder, IRaffleQuo
         ActivityOrderEntity activityOrderEntity = createOrderAggregate.getActivityOrderEntity();
         return UnpaidActivityOrderEntity.builder()
                 .userId(userId)
-                .orderId(activityOrderEntity.getOrderId())
+                .orderId(activityOrderEntity.getSkuRechargeOrderId())
                 .outBusinessNo(activityOrderEntity.getOutBusinessNo())
                 .payAmount(activityOrderEntity.getPayAmount())
                 .build();

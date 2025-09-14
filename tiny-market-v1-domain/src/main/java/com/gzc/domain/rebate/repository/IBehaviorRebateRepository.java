@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface IBehaviorRebateRepository {
 
-    void saveUserRebateRecord(String userId, List<BehaviorRebateAggregate> behaviorRebateAggregates);
-
     List<DailyBehaviorRebateVO> queryDailyBehaviorRebateConfig(BehaviorVO behaviorVO);
 
     List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String userId, String outBusinessNo);
+
+    void saveUserRebateRecord(String userId, List<BehaviorRebateAggregate> behaviorRebateAggregates);
 
 }
