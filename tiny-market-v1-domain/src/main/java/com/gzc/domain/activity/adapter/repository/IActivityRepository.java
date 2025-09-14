@@ -27,6 +27,16 @@ public interface IActivityRepository {
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
 
 
+    /**
+     * domain: partake
+     */
+    UserRaffleOrderEntity queryNoUsedRaffleOrder(PartakeRaffleActivityEntity partakeRaffleActivityEntity);
+
+    ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
+
+    void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
+
+
 
 
     ActivitySkuEntity queryActivitySku(Long sku);
@@ -47,15 +57,12 @@ public interface IActivityRepository {
 
     void clearActivitySkuStock(Long sku);
 
-    UserRaffleOrderEntity queryNoUsedRaffleOrder(PartakeRaffleActivityEntity partakeRaffleActivityEntity);
 
-    ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
 
     ActivityAccountMonthEntity queryActivityAccountMonthByUserId(String userId, Long activityId, String month);
 
     ActivityAccountDayEntity queryActivityAccountDayByUserId(String userId, Long activityId, String day);
 
-    void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 

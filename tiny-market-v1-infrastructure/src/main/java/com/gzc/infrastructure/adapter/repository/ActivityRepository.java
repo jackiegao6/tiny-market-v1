@@ -315,7 +315,7 @@ public class ActivityRepository implements IActivityRepository {
         userRaffleOrderEntity.setActivityId(userRaffleOrderRes.getActivityId());
         userRaffleOrderEntity.setActivityName(userRaffleOrderRes.getActivityName());
         userRaffleOrderEntity.setStrategyId(userRaffleOrderRes.getStrategyId());
-        userRaffleOrderEntity.setOrderId(userRaffleOrderRes.getOrderId());
+        userRaffleOrderEntity.setUserRaffleOrderId(userRaffleOrderRes.getOrderId());
         userRaffleOrderEntity.setOrderTime(userRaffleOrderRes.getOrderTime());
         userRaffleOrderEntity.setOrderState(UserRaffleOrderStateVO.valueOf(userRaffleOrderRes.getOrderState()));
         return userRaffleOrderEntity;
@@ -404,7 +404,7 @@ public class ActivityRepository implements IActivityRepository {
                                     .build());
                     if (1 != totalCount) {
                         status.setRollbackOnly();
-                        log.warn("写入创建参与活动记录，更新总账户额度不足，异常 userId: {} activityId: {}", userId, activityId);
+                        log.error("更新总账户额度异常 userId: {} activityId: {}", userId, activityId);
                         throw new AppException(ResponseCode.ACCOUNT_QUOTA_ERROR.getCode(), ResponseCode.ACCOUNT_QUOTA_ERROR.getInfo());
                     }
 
@@ -419,7 +419,7 @@ public class ActivityRepository implements IActivityRepository {
                         if (1 != updateMonthCount) {
                             // 未更新成功则回滚
                             status.setRollbackOnly();
-                            log.warn("写入创建参与活动记录，更新月账户额度不足，异常 userId: {} activityId: {} month: {}", userId, activityId, activityAccountMonthEntity.getMonth());
+                            log.warn("更新月账户额度不足异常 userId: {} activityId: {} month: {}", userId, activityId, activityAccountMonthEntity.getMonth());
                             throw new AppException(ResponseCode.ACCOUNT_MONTH_QUOTA_ERROR.getCode(), ResponseCode.ACCOUNT_MONTH_QUOTA_ERROR.getInfo());
                         }
                     } else {
@@ -430,7 +430,7 @@ public class ActivityRepository implements IActivityRepository {
                                 .monthCount(activityAccountMonthEntity.getMonthCount())
                                 .monthCountSurplus(activityAccountMonthEntity.getMonthCountSurplus() - 1)
                                 .build());
-                        // 新创建月账户，则更新总账表中月镜像额度
+                        // 新创建月账户，则更新总账表中月镜像额度 todo
                         raffleActivityAccountDao.updateActivityAccountMonthSurplusImageQuota(RaffleActivityAccount.builder()
                                 .userId(userId)
                                 .activityId(activityId)
@@ -459,7 +459,7 @@ public class ActivityRepository implements IActivityRepository {
                                 .dayCount(activityAccountDayEntity.getDayCount())
                                 .dayCountSurplus(activityAccountDayEntity.getDayCountSurplus() - 1)
                                 .build());
-                        // 新创建日账户，则更新总账表中日镜像额度
+                        // 新创建日账户，则更新总账表中日镜像额度 todo
                         raffleActivityAccountDao.updateActivityAccountDaySurplusImageQuota(RaffleActivityAccount.builder()
                                 .userId(userId)
                                 .activityId(activityId)
@@ -467,13 +467,13 @@ public class ActivityRepository implements IActivityRepository {
                                 .build());
                     }
 
-                    // 4. 写入参与活动订单
+                    // 4. save参与活动订单
                     userRaffleOrderDao.insert(UserRaffleOrder.builder()
                             .userId(userRaffleOrderEntity.getUserId())
                             .activityId(userRaffleOrderEntity.getActivityId())
                             .activityName(userRaffleOrderEntity.getActivityName())
                             .strategyId(userRaffleOrderEntity.getStrategyId())
-                            .orderId(userRaffleOrderEntity.getOrderId())
+                            .orderId(userRaffleOrderEntity.getUserRaffleOrderId())
                             .orderTime(userRaffleOrderEntity.getOrderTime())
                             .orderState(userRaffleOrderEntity.getOrderState().getCode())
                             .build());

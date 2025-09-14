@@ -55,6 +55,7 @@ public class RafflePartakeService extends AbstractRafflePartake{
             activityAccountMonthEntity.setMonth(month);
             activityAccountMonthEntity.setMonthCount(activityAccountEntity.getMonthCount());
             activityAccountMonthEntity.setMonthCountSurplus(activityAccountEntity.getMonthCount());
+            activityRepository.queryNoUsedRaffleOrder(null);
         }
 
         // 查询日账户额度
@@ -90,13 +91,13 @@ public class RafflePartakeService extends AbstractRafflePartake{
     @Override
     protected UserRaffleOrderEntity buildUserRaffleOrder(String userId, Long activityId, Date currentDate) {
         ActivityEntity activityEntity = activityRepository.queryActivityInfoByActivityId(activityId);
-        // 构建订单
+        // 构建用户抽奖订单
         UserRaffleOrderEntity userRaffleOrder = new UserRaffleOrderEntity();
         userRaffleOrder.setUserId(userId);
         userRaffleOrder.setActivityId(activityId);
         userRaffleOrder.setActivityName(activityEntity.getActivityName());
         userRaffleOrder.setStrategyId(activityEntity.getStrategyId());
-        userRaffleOrder.setOrderId(RandomStringUtils.randomNumeric(12));
+        userRaffleOrder.setUserRaffleOrderId(RandomStringUtils.randomNumeric(12));
         userRaffleOrder.setOrderTime(currentDate);
         userRaffleOrder.setOrderState(UserRaffleOrderStateVO.create);
         userRaffleOrder.setEndDateTime(activityEntity.getEndDateTime());

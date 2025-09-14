@@ -24,7 +24,6 @@ public class O1Algorithm extends AbstractAlgorithm implements IAlgorithm {
                 strategyAwardSearchRateList.add(awardId);
             }
         }
-        Collections.shuffle(strategyAwardSearchRateList);
 
         Map<Integer, Integer> shuffleStrategyAwardSearchRateTable = new HashMap<>();
         for (int i = 0; i < strategyAwardSearchRateList.size(); i++) {

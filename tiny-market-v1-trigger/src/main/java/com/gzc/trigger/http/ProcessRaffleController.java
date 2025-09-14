@@ -66,7 +66,7 @@ public class ProcessRaffleController implements IProcessRaffleController {
     @Override
     public Response<ActivityDrawResponseDTO> draw(@RequestBody ActivityDrawRequestDTO request) {
         try {
-            // 1. 参数校验
+            // 参数校验
             if (StringUtils.isBlank(request.getUserId()) || null == request.getActivityId()) {
                 throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
             }
@@ -80,20 +80,20 @@ public class ProcessRaffleController implements IProcessRaffleController {
             }
 
             // 2. 参与活动 - 创建参与记录订单
-            UserRaffleOrderEntity orderEntity = raffleActivityPartakeService.createRaffleOrder(request.getUserId(), request.getActivityId());
-            log.info("活动抽奖，创建订单 userId:{} activityId:{} orderId:{}", request.getUserId(), request.getActivityId(), orderEntity.getOrderId());
+            UserRaffleOrderEntity userRaffleOrderEntity = raffleActivityPartakeService.createRaffleOrder(request.getUserId(), request.getActivityId());
+            log.info("创建参与抽奖订单成功 userId:{} activityId:{} orderId:{}", request.getUserId(), request.getActivityId(), userRaffleOrderEntity.getUserRaffleOrderId());
             // 3. 抽奖策略 - 执行抽奖
             RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder()
-                    .userId(orderEntity.getUserId())
-                    .strategyId(orderEntity.getStrategyId())
-                    .endDateTime(orderEntity.getEndDateTime())
+                    .userId(userRaffleOrderEntity.getUserId())
+                    .strategyId(userRaffleOrderEntity.getStrategyId())
+                    .endDateTime(userRaffleOrderEntity.getEndDateTime())
                     .build());
             // 4. 存放结果 - 写入中奖记录
             UserAwardRecordEntity userAwardRecord = UserAwardRecordEntity.builder()
-                    .userId(orderEntity.getUserId())
-                    .activityId(orderEntity.getActivityId())
-                    .strategyId(orderEntity.getStrategyId())
-                    .orderId(orderEntity.getOrderId())
+                    .userId(userRaffleOrderEntity.getUserId())
+                    .activityId(userRaffleOrderEntity.getActivityId())
+                    .strategyId(userRaffleOrderEntity.getStrategyId())
+                    .orderId(userRaffleOrderEntity.getUserRaffleOrderId())
                     .awardId(raffleAwardEntity.getAwardId())
                     .awardTitle(raffleAwardEntity.getAwardTitle())
                     .awardTime(new Date())

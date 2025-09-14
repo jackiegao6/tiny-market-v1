@@ -45,7 +45,7 @@ public abstract class AbstractRafflePartake implements IRafflePartake {
         if (!ActivityStateVO.open.equals(activityEntity.getState())) {
             throw new AppException(ResponseCode.ACTIVITY_STATE_ERROR.getCode(), ResponseCode.ACTIVITY_STATE_ERROR.getInfo());
         }
-        // 校验；活动日期「开始时间 <- 当前时间 -> 结束时间」
+        // 校验；活动日期「开始时间 < 当前时间 > 结束时间」
         if (activityEntity.getBeginDateTime().after(currentDate) || activityEntity.getEndDateTime().before(currentDate)) {
             throw new AppException(ResponseCode.ACTIVITY_DATE_ERROR.getCode(), ResponseCode.ACTIVITY_DATE_ERROR.getInfo());
         }
@@ -57,10 +57,10 @@ public abstract class AbstractRafflePartake implements IRafflePartake {
             return userRaffleOrderEntity;
         }
 
-        // 3. 额度账户过滤&返回账户构建对象
+        // 3. 额度账户过滤&返回月、日账户构建对象
         CreatePartakeOrderAggregate createPartakeOrderAggregate = this.doFilterAccount(userId, activityId, currentDate);
 
-        // 4. 构建订单
+        // 4. 构建订单实体对象
         UserRaffleOrderEntity userRaffleOrder = this.buildUserRaffleOrder(userId, activityId, currentDate);
 
         // 5. 填充抽奖单实体对象
@@ -71,8 +71,6 @@ public abstract class AbstractRafflePartake implements IRafflePartake {
 
         // 7. 返回订单信息
         return userRaffleOrder;
-
-
     }
 
     protected abstract CreatePartakeOrderAggregate doFilterAccount(String userId, Long activityId, Date currentDate);

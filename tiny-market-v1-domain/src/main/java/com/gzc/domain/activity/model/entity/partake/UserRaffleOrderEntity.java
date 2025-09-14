@@ -26,7 +26,7 @@ public class UserRaffleOrderEntity {
     /** 策略ID */
     private Long strategyId;
     /** 订单ID */
-    private String orderId;
+    private String userRaffleOrderId;
     /** 下单时间 */
     private Date orderTime;
     /** 活动状态；create-创建、used-已使用、cancel-已作废 */
