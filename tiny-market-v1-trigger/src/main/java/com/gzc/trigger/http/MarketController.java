@@ -60,7 +60,6 @@ public class MarketController implements IMarketController {
 
     /**
      * 判断是否签到接口
-     * <p>
      */
     @RequestMapping(value = "/is_calendar_sign_rebate", method = RequestMethod.POST)
     @Override
@@ -85,7 +84,6 @@ public class MarketController implements IMarketController {
 
     /**
      * 签到接口
-     * <p>
      */
     @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
     @Override
@@ -121,7 +119,6 @@ public class MarketController implements IMarketController {
 
     /**
      * 查询账户额度
-     * <p>
      */
     @RequestMapping(value = "/query_user_activity_account", method = RequestMethod.POST)
     @Override
@@ -158,7 +155,76 @@ public class MarketController implements IMarketController {
 
 
     /**
-     * &#x67E5;&#x8BE2;&#x62BD;&#x5956;&#x7B56;&#x7565;&#x6743;&#x91CD;&#x89C4;&#x5219;&#x914D;&#x7F6E;
+     * 查询账户积分值
+     */
+    @RequestMapping(value = "/query_user_credit_account", method = RequestMethod.POST)
+    @Override
+    public Response<BigDecimal> queryCreditAccount(String userId) {
+        try {
+            log.info("查询用户积分值开始 userId:{}", userId);
+            CreditAccountEntity creditAccountEntity = creditAdjustService.queryUserCreditAccount(userId);
+            log.info("查询用户积分值完成 userId:{} adjustAmount:{}", userId, creditAccountEntity.getAdjustAmount());
+            return Response.<BigDecimal>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(creditAccountEntity.getAdjustAmount())
+                    .build();
+        } catch (Exception e) {
+            log.error("查询用户积分值失败 userId:{}", userId, e);
+            return Response.<BigDecimal>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+    /**
+     * 查询活动下配置的sku组合
+     */
+    @RequestMapping(value = "/query_sku_product_list_by_activity_id", method = RequestMethod.POST)
+    @Override
+    public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
+        try {
+            // 1. 参数校验
+            if (null == activityId) {
+                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+            }
+            // 2. 查询商品&封装数据
+            List<SkuProductEntity> skuProductEntities = raffleActivitySkuProductService.querySkuProductEntityByActivityId(activityId);
+            List<SkuProductResponseDTO> skuProductResponseDTOS = new ArrayList<>(skuProductEntities.size());
+            for (SkuProductEntity skuProductEntity : skuProductEntities) {
+
+                SkuProductResponseDTO.ActivityCount activityCount = new SkuProductResponseDTO.ActivityCount();
+                activityCount.setTotalCount(skuProductEntity.getActivityCount().getTotalCount());
+                activityCount.setMonthCount(skuProductEntity.getActivityCount().getMonthCount());
+                activityCount.setDayCount(skuProductEntity.getActivityCount().getDayCount());
+
+                SkuProductResponseDTO skuProductResponseDTO = new SkuProductResponseDTO();
+                skuProductResponseDTO.setSku(skuProductEntity.getSku());
+                skuProductResponseDTO.setActivityId(skuProductEntity.getActivityId());
+                skuProductResponseDTO.setActivityCountId(skuProductEntity.getActivityCountId());
+                skuProductResponseDTO.setStockCount(skuProductEntity.getStockCount());
+                skuProductResponseDTO.setStockCountSurplus(skuProductEntity.getStockCountSurplus());
+                skuProductResponseDTO.setProductAmount(skuProductEntity.getProductAmount());
+                skuProductResponseDTO.setActivityCount(activityCount);
+                skuProductResponseDTOS.add(skuProductResponseDTO);
+            }
+
+            return Response.<List<SkuProductResponseDTO>>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(skuProductResponseDTOS)
+                    .build();
+        } catch (Exception e) {
+            log.error("查询sku商品集合失败 activityId:{}", activityId, e);
+            return Response.<List<SkuProductResponseDTO>>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+
+    /**
      * curl --request POST \
      * --url http://localhost:8091/api/v1/raffle/strategy/query_raffle_strategy_rule_weight \
      * --header 'content-type: application/json' \
@@ -210,69 +276,6 @@ public class MarketController implements IMarketController {
         } catch (Exception e) {
             log.error("查询抽奖策略权重规则配置失败 userId:{} activityId：{}", userId, activityId, e);
             return Response.<List<RaffleStrategyRuleWeightResponseDTO>>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .build();
-        }
-    }
-
-    @Override
-    public Response<BigDecimal> queryCreditAccount(String userId) {
-        try {
-            log.info("查询用户积分值开始 userId:{}", userId);
-            CreditAccountEntity creditAccountEntity = creditAdjustService.queryUserCreditAccount(userId);
-            log.info("查询用户积分值完成 userId:{} adjustAmount:{}", userId, creditAccountEntity.getAdjustAmount());
-            return Response.<BigDecimal>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(creditAccountEntity.getAdjustAmount())
-                    .build();
-        } catch (Exception e) {
-            log.error("查询用户积分值失败 userId:{}", userId, e);
-            return Response.<BigDecimal>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .build();
-        }
-    }
-
-    @RequestMapping(value = "/query_sku_product_list_by_activity_id", method = RequestMethod.POST)
-    @Override
-    public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
-        try {
-            // 1. 参数校验
-            if (null == activityId) {
-                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
-            }
-            // 2. 查询商品&封装数据
-            List<SkuProductEntity> skuProductEntities = raffleActivitySkuProductService.querySkuProductEntityByActivityId(activityId);
-            List<SkuProductResponseDTO> skuProductResponseDTOS = new ArrayList<>(skuProductEntities.size());
-            for (SkuProductEntity skuProductEntity : skuProductEntities) {
-
-                SkuProductResponseDTO.ActivityCount activityCount = new SkuProductResponseDTO.ActivityCount();
-                activityCount.setTotalCount(skuProductEntity.getActivityCount().getTotalCount());
-                activityCount.setMonthCount(skuProductEntity.getActivityCount().getMonthCount());
-                activityCount.setDayCount(skuProductEntity.getActivityCount().getDayCount());
-
-                SkuProductResponseDTO skuProductResponseDTO = new SkuProductResponseDTO();
-                skuProductResponseDTO.setSku(skuProductEntity.getSku());
-                skuProductResponseDTO.setActivityId(skuProductEntity.getActivityId());
-                skuProductResponseDTO.setActivityCountId(skuProductEntity.getActivityCountId());
-                skuProductResponseDTO.setStockCount(skuProductEntity.getStockCount());
-                skuProductResponseDTO.setStockCountSurplus(skuProductEntity.getStockCountSurplus());
-                skuProductResponseDTO.setProductAmount(skuProductEntity.getProductAmount());
-                skuProductResponseDTO.setActivityCount(activityCount);
-                skuProductResponseDTOS.add(skuProductResponseDTO);
-            }
-
-            return Response.<List<SkuProductResponseDTO>>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(skuProductResponseDTOS)
-                    .build();
-        } catch (Exception e) {
-            log.error("查询sku商品集合失败 activityId:{}", activityId, e);
-            return Response.<List<SkuProductResponseDTO>>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
                     .build();

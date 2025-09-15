@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ActivityArmory implements IActivityArmory, IActivityDispatch {
+public class ActivityArmoryDispatch implements IActivityArmory, IActivityDispatch {
 
     @Resource
     private IActivityRepository activityRepository;

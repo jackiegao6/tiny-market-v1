@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 
 /**
- * 商品库存
+ * sku组合 库存
  */
 @Slf4j
 @Service("activity_sku_stock_action")
@@ -36,7 +36,7 @@ public class ActivitySkuStockActionChain extends AbstractActionChain {
         boolean status = activityDispatch.subtractionActivitySkuStock(sku, endDateTime);
         if (status) {
             // 库存扣减成功
-            activityRepository.activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO.builder()
+            activityRepository.skuStockConsumeSendQueue(ActivitySkuStockKeyVO.builder()
                     .sku(sku)
                     .activityId(activityId)
                     .build());

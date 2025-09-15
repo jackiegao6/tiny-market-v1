@@ -39,7 +39,7 @@ public class Constants {
         public static String ACTIVITY_SKU_KEY = "big_market_activity:sku_key:";
 
         /**
-         * domain: recharge
+         * domain: consume
          */
         public static String ACTIVITY_SKU_COUNT_QUERY_KEY = "big_market_activity:activity_sku:count_query_key:";
 

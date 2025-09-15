@@ -21,7 +21,7 @@ public class UpdateActivitySkuStockJob {
     @Scheduled(cron = "0/5 * * * * ?")
     public void exec() {
         try {
-            ActivitySkuStockKeyVO activitySkuStockKeyVO = skuStock.takeQueueValue();
+            ActivitySkuStockKeyVO activitySkuStockKeyVO = skuStock.skuStockConsumeSendQueueValue();
             if (null == activitySkuStockKeyVO) return;
             skuStock.updateActivitySkuStock(activitySkuStockKeyVO.getSku());
         } catch (Exception e) {

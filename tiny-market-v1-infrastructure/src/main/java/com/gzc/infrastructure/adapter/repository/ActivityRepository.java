@@ -29,7 +29,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,8 +67,6 @@ public class ActivityRepository implements IActivityRepository {
     private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
     @Resource
     private IUserRaffleOrderDao userRaffleOrderDao;
-    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private final SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
 
     @Override
     public ActivitySkuEntity queryActivitySku(Long sku) {
@@ -248,6 +245,7 @@ public class ActivityRepository implements IActivityRepository {
         if (surplus == 0) {
             // 库存消耗没了之后 发送mq消息 更新数据库缓存
             eventPublisher.publish(event.topic(), event.buildEventMessage(sku));
+
             return false;
         } else if (surplus < 0) {
             redisService.setAtomicLong(cacheKey, 0);
@@ -267,17 +265,21 @@ public class ActivityRepository implements IActivityRepository {
 
     /**
      * 这里是延迟的方法消息到 Redis 队列中。以此来减缓消费。（这里是一个双重减缓，一个是延迟队列，一个是定时的任务调度）
+     * 用 Redis 的延迟队列实现“库存扣减的异步处理
      */
     @Override
-    public void activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO activitySkuStockKeyVO) {
+    public void skuStockConsumeSendQueue(ActivitySkuStockKeyVO activitySkuStockKeyVO) {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        // 先从 Redis 获取一个阻塞队列（RBlockingQueue）
         RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        // 基于阻塞队列创建一个延迟队列（RDelayedQueue）
         RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        // 向延迟队列中添加一个元素，延迟 3 秒后才会放入 blockingQueue
         delayedQueue.offer(activitySkuStockKeyVO, 3, TimeUnit.SECONDS);
     }
 
     @Override
-    public ActivitySkuStockKeyVO takeQueueValue() {
+    public ActivitySkuStockKeyVO skuStockConsumeSendQueueValue() {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
         RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
 
@@ -285,7 +287,7 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
-    public void clearQueueValue() {
+    public void clearSkuStockQueueValue() {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
         RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
         RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
@@ -293,6 +295,8 @@ public class ActivityRepository implements IActivityRepository {
         delayedQueue.clear();
         blockingQueue.clear();
     }
+
+
 
     @Override
     public void updateActivitySkuStock(Long sku) {

@@ -14,12 +14,7 @@ public interface ISkuStock {
      * @return 奖品库存Key信息
      * @throws InterruptedException 异常
      */
-    ActivitySkuStockKeyVO takeQueueValue() throws InterruptedException;
-
-    /**
-     * 清空队列
-     */
-    void clearQueueValue();
+    ActivitySkuStockKeyVO skuStockConsumeSendQueueValue() throws InterruptedException;
 
     /**
      * 延迟队列 + 任务趋势更新活动sku库存
@@ -27,6 +22,11 @@ public interface ISkuStock {
      * @param sku 活动商品
      */
     void updateActivitySkuStock(Long sku);
+
+    /**
+     * 清空队列
+     */
+    void clearSkuStockQueueValue();
 
     /**
      * 缓存库存以消耗完毕，清空数据库库存

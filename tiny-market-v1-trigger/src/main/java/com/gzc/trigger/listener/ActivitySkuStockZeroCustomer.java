@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 活动sku库存耗尽
- * @create 2024-03-30 12:31
  */
 @Slf4j
 @Component
@@ -38,7 +36,7 @@ public class ActivitySkuStockZeroCustomer {
             // 更新库存
             skuStock.clearActivitySkuStock(sku);
             // 清空队列 「此时就不需要延迟更新数据库记录了」
-//            skuStock.clearQueueValue();
+            skuStock.clearSkuStockQueueValue();
         } catch (Exception e) {
             log.error("监听活动sku库存消耗为0消息，消费失败 topic: {} message: {}", topic, message);
             throw e;

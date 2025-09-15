@@ -37,7 +37,7 @@ public interface IActivityRepository {
     void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
 
     /**
-     * domain: recharge sku
+     * domain: consume sku
      */
     UnpaidActivityOrderEntity queryUnpaidActivityOrder(SkuRechargeEntity skuRechargeEntity);
 
@@ -45,9 +45,19 @@ public interface IActivityRepository {
 
     boolean subtractionActivitySkuStock(Long sku, String cacheKey, Date endDateTime);
 
-    void activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO build);
+    void skuStockConsumeSendQueue(ActivitySkuStockKeyVO build);
 
     void doSaveSkuRechargeOrder(CreateQuotaOrderAggregate createQuotaOrderAggregate);
+
+    List<SkuProductEntity> querySkuProductEntityByActivityId(Long activityId);
+
+    ActivitySkuStockKeyVO skuStockConsumeSendQueueValue();
+
+    void updateActivitySkuStock(Long sku);
+
+    void clearSkuStockQueueValue();
+
+    void clearActivitySkuStock(Long sku);
 
 
     /**
@@ -67,13 +77,10 @@ public interface IActivityRepository {
 
 
 
-    ActivitySkuStockKeyVO takeQueueValue();
 
-    void clearQueueValue();
 
-    void updateActivitySkuStock(Long sku);
 
-    void clearActivitySkuStock(Long sku);
+
 
 
     ActivityAccountMonthEntity queryActivityAccountMonthByUserId(String userId, Long activityId, String month);
@@ -86,6 +93,5 @@ public interface IActivityRepository {
 
     Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);
 
-    List<SkuProductEntity> querySkuProductEntityByActivityId(Long activityId);
 
 }
