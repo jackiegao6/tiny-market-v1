@@ -58,6 +58,11 @@ public interface IActivityRepository {
     void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
 
 
+    /**
+     * domain: query personal sku count
+     */
+    ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId);
+
 
 
 
@@ -78,7 +83,6 @@ public interface IActivityRepository {
 
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 
-    ActivityAccountEntity queryActivityAccountEntity(Long activityId, String userId);
 
     Integer queryRaffleActivityAccountPartakeCount(Long activityId, String userId);
 

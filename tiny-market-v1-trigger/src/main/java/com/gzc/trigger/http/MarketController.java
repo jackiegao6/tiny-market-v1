@@ -58,6 +58,35 @@ public class MarketController implements IMarketController {
     @Resource
     private IRaffleSkuProductService raffleActivitySkuProductService;
 
+    /**
+     * 判断是否签到接口
+     * <p>
+     */
+    @RequestMapping(value = "/is_calendar_sign_rebate", method = RequestMethod.POST)
+    @Override
+    public Response<Boolean> isUserCalenderSignRebate(String userId) {
+        try {
+            String outBusinessNo = dateFormatDay.format(new Date());
+            List<BehaviorRebateOrderEntity> behaviorRebateOrderEntities = behaviorRebateService.queryOrderByOutBusinessNo(userId, outBusinessNo);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(!behaviorRebateOrderEntities.isEmpty()) // 只要不为空，则表示已经做了签到
+                    .build();
+        } catch (Exception e) {
+            log.error("查询用户是否完成日历签到返利失败 userId:{}", userId, e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .data(false)
+                    .build();
+        }
+    }
+
+    /**
+     * 签到接口
+     * <p>
+     */
     @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
     @Override
     public Response<Boolean> calenderSignRebate(String userId) {
@@ -90,48 +119,13 @@ public class MarketController implements IMarketController {
         }
     }
 
-
-    /**
-     * 判断是否签到接口
-     * <p>
-     * curl -X POST http://localhost:8091/api/v1/raffle/activity/is_calendar_sign_rebate -d "userId=xiaofuge" -H "Content-Type: application/x-www-form-urlencoded"
-     */
-    @RequestMapping(value = "/is_calendar_sign_rebate", method = RequestMethod.POST)
-    @Override
-    public Response<Boolean> isUserCalenderSignRebate(String userId) {
-        try {
-            String outBusinessNo = dateFormatDay.format(new Date());
-            List<BehaviorRebateOrderEntity> behaviorRebateOrderEntities = behaviorRebateService.queryOrderByOutBusinessNo(userId, outBusinessNo);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(!behaviorRebateOrderEntities.isEmpty()) // 只要不为空，则表示已经做了签到
-                    .build();
-        } catch (Exception e) {
-            log.error("查询用户是否完成日历签到返利失败 userId:{}", userId, e);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .data(false)
-                    .build();
-        }
-    }
-
-
     /**
      * 查询账户额度
      * <p>
-     * curl --request POST \
-     * --url http://localhost:8091/api/v1/raffle/activity/query_user_activity_account \
-     * --header 'content-type: application/json' \
-     * --data '{
-     * "userId":"gzc",
-     * "activityId": 100301
-     * }'
      */
     @RequestMapping(value = "/query_user_activity_account", method = RequestMethod.POST)
     @Override
-    public Response<UserActivityAccountResponseDTO> queryUserActivityAccount(UserActivityAccountRequestDTO request) {
+    public Response<UserActivityAccountResponseDTO> queryUserActivityAccount(@RequestBody UserActivityAccountRequestDTO request) {
         Long activityId = request.getActivityId();
         String userId = request.getUserId();
         try {
@@ -175,7 +169,7 @@ public class MarketController implements IMarketController {
      */
     @RequestMapping(value = "/query_raffle_strategy_rule_weight", method = RequestMethod.POST)
     @Override
-    public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryUserRuleWeight(RaffleStrategyRuleWeightRequestDTO request) {
+    public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryUserRuleWeight(@RequestBody RaffleStrategyRuleWeightRequestDTO request) {
         Long activityId = request.getActivityId();
         String userId = request.getUserId();
         try {
@@ -222,7 +216,6 @@ public class MarketController implements IMarketController {
         }
     }
 
-    @RequestMapping(value = "/query_user_activity_account", method = RequestMethod.POST)
     @Override
     public Response<BigDecimal> queryCreditAccount(String userId) {
         try {
