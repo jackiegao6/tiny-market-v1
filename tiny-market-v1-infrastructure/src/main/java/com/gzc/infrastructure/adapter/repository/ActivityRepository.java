@@ -552,18 +552,19 @@ public class ActivityRepository implements IActivityRepository {
         }
 
         // 2. 查询月账户额度
-        Date date = new Date();
-        RaffleActivityAccountMonth monthAccount = raffleActivityAccountMonthDao.queryActivityAccountMonthByUserId(RaffleActivityAccountMonth.builder()
+        RaffleActivityAccountMonth monthAccount = new RaffleActivityAccountMonth() ;
+        monthAccount = raffleActivityAccountMonthDao.queryActivityAccountMonthByUserId(RaffleActivityAccountMonth.builder()
                 .activityId(activityId)
                 .userId(userId)
-                .month(monthFormat.format(date))
+                .month(monthAccount.currentMonth())
                 .build());
 
         // 3. 查询日账户额度
-        RaffleActivityAccountDay dayAccount = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(RaffleActivityAccountDay.builder()
+        RaffleActivityAccountDay dayAccount = new RaffleActivityAccountDay();
+        dayAccount = raffleActivityAccountDayDao.queryActivityAccountDayByUserId(RaffleActivityAccountDay.builder()
                 .activityId(activityId)
                 .userId(userId)
-                .day(dayFormat.format(date))
+                .day(dayAccount.currentDay())
                 .build());
 
         // 组装对象
