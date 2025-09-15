@@ -39,9 +39,10 @@ public class Constants {
         public static String ACTIVITY_SKU_KEY = "big_market_activity:sku_key:";
 
         /**
-         * domain: consume
+         * domain: consume sku
          */
         public static String ACTIVITY_SKU_COUNT_QUERY_KEY = "big_market_activity:activity_sku:count_query_key:";
+        public static String ACTIVITY_SKU_INFO_KEY = "big_market_activity:activity_sku:info_key:";
 
 
         public static String USER_CREDIT_ACCOUNT_LOCK = "lock:user_credit_account_lock:";

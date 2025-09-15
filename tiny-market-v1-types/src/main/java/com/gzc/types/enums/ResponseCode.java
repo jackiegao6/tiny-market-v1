@@ -12,7 +12,7 @@ public enum ResponseCode {
     SUCCESS("0000", "调用成功"),
     UN_ERROR("0001", "调用失败"),
     ILLEGAL_PARAMETER("0002", "非法参数"),
-    INDEX_DUP("0003", "唯一索引冲突"),
+    INDEX_DUP("0003", "每人每天只能签到一次哦~"),
     DEGRADE_STATUS("0004", "降级处理"),
     RATE_LIMITER("0005", "访问限流拦截"),
     HYSTRIX("0006", "访问熔断拦截"),

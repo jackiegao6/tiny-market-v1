@@ -35,12 +35,11 @@ public class CreditAdjustSuccessCustomer {
             }.getType());
             CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage creditAdjustSuccessMessage = eventMessage.getData();
 
-            // 积分发货
+            // 积分调整
             DeliveryOrderEntity deliveryOrderEntity = new DeliveryOrderEntity();
             deliveryOrderEntity.setUserId(creditAdjustSuccessMessage.getUserId());
             deliveryOrderEntity.setOutBusinessNo(creditAdjustSuccessMessage.getOutBusinessNo());
-            // todo
-//            raffleQuotaService.updateOrder(deliveryOrderEntity);
+            raffleQuotaService.updateOrder(deliveryOrderEntity);
         } catch (AppException e) {
             if (ResponseCode.INDEX_DUP.getCode().equals(e.getCode())) {
                 log.warn("监听积分账户调整成功消息，进行交易商品发货，消费重复 topic: {} message: {}", topic, message, e);

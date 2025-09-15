@@ -6,9 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 用户积分账户
- * @create 2024-05-18 09:10
  */
 @Data
 public class UserCreditAccount {

@@ -8,6 +8,7 @@ import com.gzc.domain.credit.model.aggregate.TradeAggregate;
 import com.gzc.domain.credit.model.entity.CreditAccountEntity;
 import com.gzc.domain.credit.model.entity.CreditAdjustTaskEntity;
 import com.gzc.domain.credit.model.entity.CreditOrderEntity;
+import com.gzc.domain.credit.model.valobj.TradeTypeVO;
 import com.gzc.infrastructure.dao.ITaskDao;
 import com.gzc.infrastructure.dao.IUserCreditAccountDao;
 import com.gzc.infrastructure.dao.IUserCreditOrderDao;
@@ -82,7 +83,11 @@ public class CreditRepository implements ICreditRepository {
                     if (null == userCreditAccount) {
                         userCreditAccountDao.insert(userCreditAccountReq);
                     } else {
-                        userCreditAccountDao.updateAddAmount(userCreditAccountReq);
+                        if(TradeTypeVO.FORWARD == creditOrderEntity.getTradeType()){
+                            userCreditAccountDao.updateAddAmount(userCreditAccountReq);
+                        }else {
+                            userCreditAccountDao.updateSubtractionAmount(userCreditAccountReq);
+                        }
                     }
                     // 2. 保存账户订单
                     userCreditOrderDao.insert(userCreditOrderReq);

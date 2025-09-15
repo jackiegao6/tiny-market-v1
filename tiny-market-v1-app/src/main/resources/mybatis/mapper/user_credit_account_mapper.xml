@@ -32,5 +32,11 @@
         where user_id = #{userId}
     </select>
 
+    <update id="updateSubtractionAmount" parameterType="com.gzc.infrastructure.dao.po.UserCreditAccount">
+        update user_credit_account set
+                                       available_amount = available_amount - #{availableAmount}
+        where user_id = #{userId}
+    </update>
+
 
 </mapper>

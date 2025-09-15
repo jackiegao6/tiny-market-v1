@@ -225,6 +225,46 @@ public class MarketController implements IMarketController {
     }
 
     /**
+     * 积分兑换sku抽奖次数
+     */
+    @RequestMapping(value = "/credit_pay_exchange_sku", method = RequestMethod.POST)
+    @Override
+    public Response<Boolean> creditExchangeSku(@RequestBody SkuProductShopCartRequestDTO requestDTO) {
+        try {
+            // 1. 创建积分兑换sku抽奖次数的 待支付订单
+            UnpaidActivityOrderEntity skuRechargeOrder = raffleQuotaService.createSkuRechargeOrder(SkuRechargeEntity.builder()
+                    .userId(requestDTO.getUserId())
+                    .sku(requestDTO.getSku())
+                    .outBusinessNo(RandomStringUtils.randomNumeric(12))
+                    .orderTradeType(OrderTradeTypeVO.credit_pay_trade)
+                    .build());
+
+
+            // 2. 扣减积分
+            String creditOrderId = creditAdjustService.createCreditOrder(CreditTradeEntity.builder()
+                    .userId(skuRechargeOrder.getUserId())
+                    .tradeName(TradeNameVO.CONVERT_SKU)
+                    .tradeType(TradeTypeVO.REVERSE)
+                    .amount(skuRechargeOrder.getPayAmount())
+                    .outBusinessNo(skuRechargeOrder.getOutBusinessNo())
+                    .build());
+
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(true)
+                    .build();
+        } catch (Exception e) {
+            log.error("积分兑换商品失败 userId:{} sku:{}", requestDTO.getUserId(), requestDTO.getSku(), e);
+            return Response.<Boolean>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .data(false)
+                    .build();
+        }
+    }
+
+    /**
      * curl --request POST \
      * --url http://localhost:8091/api/v1/raffle/strategy/query_raffle_strategy_rule_weight \
      * --header 'content-type: application/json' \
@@ -278,43 +318,6 @@ public class MarketController implements IMarketController {
             return Response.<List<RaffleStrategyRuleWeightResponseDTO>>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
-                    .build();
-        }
-    }
-
-    @RequestMapping(value = "/credit_pay_exchange_sku", method = RequestMethod.POST)
-    @Override
-    public Response<Boolean> creditExchangeSku(@RequestBody SkuProductShopCartRequestDTO requestDTO) {
-        try {
-            // 1. 创建积分兑换sku抽奖次数的 待支付订单
-            UnpaidActivityOrderEntity skuRechargeOrder = raffleQuotaService.createSkuRechargeOrder(SkuRechargeEntity.builder()
-                    .userId(requestDTO.getUserId())
-                    .sku(requestDTO.getSku())
-                    .outBusinessNo(RandomStringUtils.randomNumeric(12))
-                    .orderTradeType(OrderTradeTypeVO.credit_pay_trade)
-                    .build());
-
-
-            // 2. 扣减积分
-            String creditOrderId = creditAdjustService.createCreditOrder(CreditTradeEntity.builder()
-                    .userId(skuRechargeOrder.getUserId())
-                    .tradeName(TradeNameVO.CONVERT_SKU)
-                    .tradeType(TradeTypeVO.REVERSE)
-                    .amount(skuRechargeOrder.getPayAmount())
-                    .outBusinessNo(skuRechargeOrder.getOutBusinessNo())
-                    .build());
-
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.SUCCESS.getCode())
-                    .info(ResponseCode.SUCCESS.getInfo())
-                    .data(true)
-                    .build();
-        } catch (Exception e) {
-            log.error("积分兑换商品失败 userId:{} sku:{}", requestDTO.getUserId(), requestDTO.getSku(), e);
-            return Response.<Boolean>builder()
-                    .code(ResponseCode.UN_ERROR.getCode())
-                    .info(ResponseCode.UN_ERROR.getInfo())
-                    .data(false)
                     .build();
         }
     }

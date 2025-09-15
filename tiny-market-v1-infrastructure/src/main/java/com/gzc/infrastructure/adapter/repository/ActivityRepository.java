@@ -70,6 +70,11 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public ActivitySkuEntity queryActivitySku(Long sku) {
+
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_INFO_KEY + sku;
+        ActivitySkuEntity activitySkuEntity = redisService.getValue(cacheKey);
+        if (null != activitySkuEntity) return activitySkuEntity;
+
         RaffleActivitySku raffleActivitySku = raffleActivitySkuDao.queryActivitySku(sku);
 
         return ActivitySkuEntity.builder()
