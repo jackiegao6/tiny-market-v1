@@ -330,13 +330,24 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public Long queryStrategyIdByActivityId(Long activityId) {
-        return raffleActivityDao.queryStrategyIdByActivityId(activityId);
+        String cacheKey = Constants.RedisKey.STRATEGY_ID4ACTIVITY_KEY + activityId;
+        Long strategyId = redisService.getValue(cacheKey);
+        if (strategyId == null){
+            strategyId = raffleActivityDao.queryActivityIdByStrategyId(activityId);
+            redisService.setValue(cacheKey, strategyId);
+        }
+        return strategyId;
     }
 
     @Override
     public Integer queryTodayUserRaffleCount(String userId, Long strategyId) {
-        // 活动ID todo threadLocal
-        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+
+        String cacheKey = Constants.RedisKey.ACTIVITY_ID4STRATEGY_KEY + strategyId;
+        Long activityId = redisService.getValue(cacheKey);
+        if (activityId == null){
+            activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+            redisService.setValue(cacheKey, activityId);
+        }
         // 封装参数
         RaffleActivityAccountDay raffleActivityAccountDayReq = new RaffleActivityAccountDay();
         raffleActivityAccountDayReq.setUserId(userId);
@@ -365,8 +376,13 @@ public class StrategyRepository implements IStrategyRepository {
 
     @Override
     public Integer queryUserJoinCount(String userId, Long strategyId) {
-        // todo 写到threadLocal中
-        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+        String cacheKey = Constants.RedisKey.ACTIVITY_ID4STRATEGY_KEY + strategyId;
+        Long activityId = redisService.getValue(cacheKey);
+        if (activityId == null){
+            activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+            redisService.setValue(cacheKey, activityId);
+        }
+
         RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(RaffleActivityAccount.builder()
                 .userId(userId)
                 .activityId(activityId)

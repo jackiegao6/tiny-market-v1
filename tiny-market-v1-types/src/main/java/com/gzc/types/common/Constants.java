@@ -45,6 +45,18 @@ public class Constants {
         public static String ACTIVITY_SKU_INFO_KEY = "big_market_activity:activity_sku:info_key:";
 
 
+        /**
+         * activityId-strategyId
+         */
+        public static String ACTIVITY_ID4STRATEGY_KEY = "big_market_activity:activity_id4strategy_key:";
+        public static String STRATEGY_ID4ACTIVITY_KEY = "big_market_activity:strategy_id4activity_key:";
+
+
+
+
+        /**
+         * domain: lock
+         */
         public static String USER_CREDIT_ACCOUNT_LOCK = "lock:user_credit_account_lock:";
         public static String ACTIVITY_ACCOUNT_UPDATE_LOCK = "lock:activity_account_update_lock:";
 
