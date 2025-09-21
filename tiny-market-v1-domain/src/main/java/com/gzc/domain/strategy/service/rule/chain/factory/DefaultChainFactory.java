@@ -4,9 +4,11 @@ import com.gzc.domain.strategy.adapter.repository.IStrategyRepository;
 import com.gzc.domain.strategy.model.entity.StrategyEntity;
 import com.gzc.domain.strategy.service.rule.chain.ILogicChain;
 import lombok.*;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @description 工厂
@@ -14,12 +16,14 @@ import java.util.Map;
 @Service
 public class DefaultChainFactory {
 
-    private final Map<String, ILogicChain> logicChainGroup;
+    private final ApplicationContext applicationContext;
+    private final Map<Long, ILogicChain> strategyChainGroup;
     protected IStrategyRepository strategyRepository;
 
-    public DefaultChainFactory(Map<String, ILogicChain> logicChainGroup, IStrategyRepository repository) {
-        this.logicChainGroup = logicChainGroup;
-        this.strategyRepository = repository;
+    public DefaultChainFactory(ApplicationContext applicationContext, IStrategyRepository strategyRepository) {
+        this.applicationContext = applicationContext;
+        this.strategyRepository = strategyRepository;
+        this.strategyChainGroup = new ConcurrentHashMap<>();
     }
 
     /**
@@ -29,24 +33,31 @@ public class DefaultChainFactory {
      * @return LogicChain
      */
     public ILogicChain buildLogicChain(Long strategyId) {
+
+        ILogicChain cacheLogicChain = strategyChainGroup.get(strategyId);
+        if (cacheLogicChain != null) return cacheLogicChain;
+
         StrategyEntity strategy = strategyRepository.queryStrategyEntityByStrategyId(strategyId);
         String[] ruleModels = strategy.getRuleModels();
 
         // 如果未配置策略规则，则只装填一个默认责任链
-        if (null == ruleModels || 0 == ruleModels.length)
-            return logicChainGroup.get("default");
+        if (null == ruleModels || 0 == ruleModels.length){
+            ILogicChain defaultLogicChain = applicationContext.getBean(LogicModel.RULE_DEFAULT.getCode(), ILogicChain.class);
+            strategyChainGroup.put(strategyId, defaultLogicChain);
+            return defaultLogicChain;
+        }
 
         // 按照配置顺序装填用户配置的责任链；rule_blacklist、rule_weight
-        ILogicChain headerChain = logicChainGroup.get(ruleModels[0]);
+        ILogicChain headerChain = applicationContext.getBean(ruleModels[0], ILogicChain.class);
         ILogicChain pointer = headerChain;
         for (int i = 1; i < ruleModels.length; i++) {
-            ILogicChain nextChain = logicChainGroup.get(ruleModels[i]);
+            ILogicChain nextChain = applicationContext.getBean(ruleModels[i], ILogicChain.class);
             pointer = pointer.appendNext(nextChain);
         }
 
         // 责任链的最后装填默认责任链
-        pointer.appendNext(logicChainGroup.get("default"));
-
+        pointer.appendNext(applicationContext.getBean(LogicModel.RULE_DEFAULT.getCode(), ILogicChain.class));
+        strategyChainGroup.put(strategyId, headerChain);
         return headerChain;
     }
     @Data
