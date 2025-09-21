@@ -7,18 +7,19 @@ import com.gzc.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.gzc.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
  * @description 权重抽奖责任链
- * @create 2024-01-20 10:38
  */
 @Slf4j
 @Component("rule_weight")
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class RuleWeightLogicChain extends AbstractLogicChain {
 
     @Resource

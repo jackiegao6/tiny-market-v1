@@ -23,6 +23,7 @@ public class SendAwardMessageEvent extends BaseEvent<SendAwardMessageEvent.SendA
     @Override
     public EventMessage<SendAwardMessage> buildEventMessage(SendAwardMessage data) {
         return EventMessage.<SendAwardMessage>builder()
+                // todo 引入雪花算法
                 .id(RandomStringUtils.randomNumeric(11))
                 .timestamp(new Date())
                 .data(data)

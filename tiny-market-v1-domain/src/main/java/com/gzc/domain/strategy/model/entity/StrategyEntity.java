@@ -21,7 +21,10 @@ public class StrategyEntity {
     private String ruleModels;
 
     public String[] getRuleModels() {
-        if (StringUtils.isBlank(ruleModels)) return null;
+        if (StringUtils.isBlank(ruleModels))
+            return null;
+
+        // rule_blacklist,rule_weight
         return ruleModels.split(Constants.SPLIT);
     }
 
