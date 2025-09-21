@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @description 默认的责任链「作为最后一个链」
  */
 @Slf4j
-@Component("default")
+@Component("rule_default")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DefaultLogicChain extends AbstractLogicChain {
 
