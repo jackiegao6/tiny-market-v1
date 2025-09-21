@@ -60,7 +60,7 @@ public class RedissonService implements IRedisService {
 
     @Override
     public long decr(String key) {
-        return redissonClient.getAtomicLong(key).getAndDecrement();
+        return redissonClient.getAtomicLong(key).decrementAndGet();
     }
 
     @Override
