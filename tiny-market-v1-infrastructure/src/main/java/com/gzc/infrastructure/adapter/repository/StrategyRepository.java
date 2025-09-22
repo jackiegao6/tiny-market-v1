@@ -283,7 +283,7 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public Boolean subtractionAwardStock(String cacheKey, Integer awardId, Date endDateTime) {
         long surplus = redisService.decr(cacheKey);
-        if (surplus < 0) {
+        if (surplus == 0) {
             redisService.setValue(cacheKey, 0);
             return false;
         }
@@ -317,6 +317,7 @@ public class StrategyRepository implements IStrategyRepository {
         String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_CONSUME_Q;
         RBlockingQueue<StrategyAwardStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
 
+        // 每5秒轮询一下阻塞队列 有就返回一个 没有就返回null
         return blockingQueue.poll();
     }
 

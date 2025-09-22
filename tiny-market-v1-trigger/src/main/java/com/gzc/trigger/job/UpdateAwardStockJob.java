@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * 更新奖品库存任务
+ */
 @Slf4j
 @Component
 public class UpdateAwardStockJob {
@@ -19,7 +22,8 @@ public class UpdateAwardStockJob {
     public void exec(){
         try {
             StrategyAwardStockKeyVO strategyAwardStockKeyVO = raffleStock.takeQueueValue();
-            if (null == strategyAwardStockKeyVO) return;
+            if (null == strategyAwardStockKeyVO)
+                return;
             raffleStock.updateStrategyAwardStock(strategyAwardStockKeyVO.getStrategyId(), strategyAwardStockKeyVO.getAwardId());
         } catch (Exception e) {
             log.error("定时任务，更新奖品消耗库存失败", e);

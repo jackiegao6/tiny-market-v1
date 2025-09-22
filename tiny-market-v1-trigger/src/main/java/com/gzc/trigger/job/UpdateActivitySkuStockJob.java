@@ -22,7 +22,8 @@ public class UpdateActivitySkuStockJob {
     public void exec() {
         try {
             ActivitySkuStockKeyVO activitySkuStockKeyVO = skuStock.skuStockConsumeSendQueueValue();
-            if (null == activitySkuStockKeyVO) return;
+            if (null == activitySkuStockKeyVO)
+                return;
             skuStock.updateActivitySkuStock(activitySkuStockKeyVO.getSku());
         } catch (Exception e) {
             log.error("定时任务，更新活动sku库存失败", e);

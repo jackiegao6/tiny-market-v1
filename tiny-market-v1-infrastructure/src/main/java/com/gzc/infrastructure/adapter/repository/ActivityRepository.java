@@ -282,6 +282,7 @@ public class ActivityRepository implements IActivityRepository {
         // 基于阻塞队列创建一个延迟队列（RDelayedQueue）
         RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
         // 向延迟队列中添加一个元素，延迟 3 秒后才会放入 blockingQueue
+        // 感觉没什么延迟的必要
         delayedQueue.offer(activitySkuStockKeyVO, 3, TimeUnit.SECONDS);
     }
 
