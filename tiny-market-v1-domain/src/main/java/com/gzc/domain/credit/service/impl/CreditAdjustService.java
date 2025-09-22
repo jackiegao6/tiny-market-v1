@@ -7,6 +7,7 @@ import com.gzc.domain.credit.model.entity.CreditAccountEntity;
 import com.gzc.domain.credit.model.entity.CreditAdjustTaskEntity;
 import com.gzc.domain.credit.model.entity.CreditOrderEntity;
 import com.gzc.domain.credit.model.entity.CreditTradeEntity;
+import com.gzc.domain.credit.model.valobj.TradeNameVO;
 import com.gzc.domain.credit.service.ICreditAdjustService;
 import com.gzc.types.event.BaseEvent;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,10 @@ public class CreditAdjustService implements ICreditAdjustService {
 
         // 2. 创建账户订单实体
         String outBusinessNo = creditTradeEntity.getOutBusinessNo();
+        TradeNameVO tradeNameVO = creditTradeEntity.getTradeName();
         CreditOrderEntity creditOrderEntity = TradeAggregate.createCreditOrderEntity(
                 userId,
-                creditTradeEntity.getTradeName(),
+                tradeNameVO,
                 creditTradeEntity.getTradeType(),
                 amount,
                 outBusinessNo);
@@ -46,6 +48,7 @@ public class CreditAdjustService implements ICreditAdjustService {
                 .orderId(creditOrderEntity.getOrderId())
                 .amount(amount)
                 .outBusinessNo(outBusinessNo)
+                .tradeNameVO(tradeNameVO)
                 .build();
         BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> creditAdjustSuccessEventMessage = creditAdjustSuccessMessageEvent.buildEventMessage(msgBody);
 

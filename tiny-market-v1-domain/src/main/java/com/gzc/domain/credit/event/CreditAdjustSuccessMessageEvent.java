@@ -1,5 +1,6 @@
 package com.gzc.domain.credit.event;
 
+import com.gzc.domain.credit.model.valobj.TradeNameVO;
 import com.gzc.types.event.BaseEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +58,7 @@ public class CreditAdjustSuccessMessageEvent extends BaseEvent<CreditAdjustSucce
          * 业务仿重ID - 外部透传。返利、行为等唯一标识
          */
         private String outBusinessNo;
+        private TradeNameVO tradeNameVO;
     }
 
 }
