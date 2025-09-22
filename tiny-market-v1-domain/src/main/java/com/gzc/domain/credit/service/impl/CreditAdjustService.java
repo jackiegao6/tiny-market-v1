@@ -12,6 +12,8 @@ import com.gzc.types.event.BaseEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class CreditAdjustService implements ICreditAdjustService {
@@ -21,40 +23,44 @@ public class CreditAdjustService implements ICreditAdjustService {
 
 
     @Override
-    public String createCreditOrder(CreditTradeEntity tradeEntity) {
+    public String createCreditOrder(CreditTradeEntity creditTradeEntity) {
 
+        String userId = creditTradeEntity.getUserId();
+        BigDecimal amount = creditTradeEntity.getAmount();
         // 1. 创建账户积分实体
         CreditAccountEntity creditAccountEntity = TradeAggregate.createCreditAccountEntity(
-                tradeEntity.getUserId(),
-                tradeEntity.getAmount());
+                userId,
+                amount);
 
         // 2. 创建账户订单实体
+        String outBusinessNo = creditTradeEntity.getOutBusinessNo();
         CreditOrderEntity creditOrderEntity = TradeAggregate.createCreditOrderEntity(
-                tradeEntity.getUserId(),
-                tradeEntity.getTradeName(),
-                tradeEntity.getTradeType(),
-                tradeEntity.getAmount(),
-                tradeEntity.getOutBusinessNo());
+                userId,
+                creditTradeEntity.getTradeName(),
+                creditTradeEntity.getTradeType(),
+                amount,
+                outBusinessNo);
         // 3. 构建消息任务对象
-        CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage creditAdjustSuccessMessage = new CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage();
-        creditAdjustSuccessMessage.setUserId(tradeEntity.getUserId());
-        creditAdjustSuccessMessage.setOrderId(creditOrderEntity.getOrderId());
-        creditAdjustSuccessMessage.setAmount(tradeEntity.getAmount());
-        creditAdjustSuccessMessage.setOutBusinessNo(tradeEntity.getOutBusinessNo());
-        BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> creditAdjustSuccessEventMessage = creditAdjustSuccessMessageEvent.buildEventMessage(creditAdjustSuccessMessage);
+        CreditAdjustSuccessMessageEvent.CreditAdjustMessage msgBody = CreditAdjustSuccessMessageEvent.CreditAdjustMessage.builder()
+                .userId(userId)
+                .orderId(creditOrderEntity.getOrderId())
+                .amount(amount)
+                .outBusinessNo(outBusinessNo)
+                .build();
+        BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> creditAdjustSuccessEventMessage = creditAdjustSuccessMessageEvent.buildEventMessage(msgBody);
 
-        CreditAdjustTaskEntity taskEntity = TradeAggregate.createCreditAdjustTaskEntity(tradeEntity.getUserId(), creditAdjustSuccessMessageEvent.topic(), creditAdjustSuccessEventMessage.getId(), creditAdjustSuccessEventMessage);
+        CreditAdjustTaskEntity taskEntity = TradeAggregate.createCreditAdjustTaskEntity(creditTradeEntity.getUserId(), creditAdjustSuccessMessageEvent.topic(), creditAdjustSuccessEventMessage.getId(), creditAdjustSuccessEventMessage);
 
         // 4. 构建交易聚合对象
         TradeAggregate tradeAggregate = TradeAggregate.builder()
-                .userId(tradeEntity.getUserId())
+                .userId(creditTradeEntity.getUserId())
                 .creditAccountEntity(creditAccountEntity)
                 .creditOrderEntity(creditOrderEntity)
                 .creditAdjustTaskEntity(taskEntity)
                 .build();
 
         // 5. 保存积分交易订单
-        creditRepository.saveUserCreditTradeOrder(tradeAggregate);
+        creditRepository.adjustCreditAccount(tradeAggregate);
 
         return creditOrderEntity.getOrderId();
     }

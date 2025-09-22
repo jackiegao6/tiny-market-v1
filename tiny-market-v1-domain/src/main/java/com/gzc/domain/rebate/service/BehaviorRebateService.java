@@ -32,33 +32,39 @@ public class BehaviorRebateService implements IBehaviorRebateService {
         String userId = behaviorEntity.getUserId();
         String outBusinessNo = behaviorEntity.getOutBusinessNo();
 
-        // 1. 查询签到 返利配置
-        List<DailyBehaviorRebateVO> dailyBehaviorRebateVOS = behaviorRebateRepository.queryDailyBehaviorRebateConfig(behaviorEntity.getBehaviorVO());
-        if (null == dailyBehaviorRebateVOS || dailyBehaviorRebateVOS.isEmpty()) return new ArrayList<>();
+        // 1. 查询签到的返利配置列表
+        List<DailyBehaviorRebateVO> rebateConfigList = behaviorRebateRepository.queryDailyBehaviorRebateConfig(behaviorEntity.getBehaviorVO());
+        if (null == rebateConfigList || rebateConfigList.isEmpty()) return new ArrayList<>();
 
         // 2. 构建聚合对象
         List<String> rebateOrderIds = new ArrayList<>();
         List<BehaviorRebateAggregate> behaviorRebateAggregates = new ArrayList<>();
-        for (DailyBehaviorRebateVO dailyBehaviorRebateVO : dailyBehaviorRebateVOS) {
-            String bizId = userId + Constants.UNDERLINE + dailyBehaviorRebateVO.getRebateType() + Constants.UNDERLINE + outBusinessNo;
+
+        for (DailyBehaviorRebateVO rebateConfigVO : rebateConfigList) {
+            // bizId: gzc_sign_2025-09-22
+            String bizId = userId + Constants.UNDERLINE + rebateConfigVO.getRebateType() + Constants.UNDERLINE + outBusinessNo;
+
+            // todo 雪花算法
             String rebateOrderId = RandomStringUtils.randomNumeric(12);
-            BehaviorRebateOrderEntity behaviorRebateOrderEntity = BehaviorRebateOrderEntity.builder()
+            BehaviorRebateOrderEntity rebateOrderEntity = BehaviorRebateOrderEntity.builder()
                     .userId(userId)
                     .orderId(rebateOrderId)
-                    .behaviorType(dailyBehaviorRebateVO.getBehaviorType())
-                    .rebateDesc(dailyBehaviorRebateVO.getRebateDesc())
-                    .rebateType(dailyBehaviorRebateVO.getRebateType())
-                    .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
+                    .behaviorType(rebateConfigVO.getBehaviorType())
+                    .rebateDesc(rebateConfigVO.getRebateDesc())
+                    .rebateType(rebateConfigVO.getRebateType())
+                    .rebateConfig(rebateConfigVO.getRebateConfig())
                     .outBusinessNo(outBusinessNo)
                     .bizId(bizId)
                     .build();
+
             rebateOrderIds.add(rebateOrderId);
 
             // MQ + 任务
+            // 把返利的配置放入消息中
             SendRebateMessageEvent.RebateMessage messageBody = SendRebateMessageEvent.RebateMessage.builder()
                     .userId(userId)
-                    .rebateType(dailyBehaviorRebateVO.getRebateType())
-                    .rebateConfig(dailyBehaviorRebateVO.getRebateConfig())
+                    .rebateType(rebateConfigVO.getRebateType())
+                    .rebateConfig(rebateConfigVO.getRebateConfig())
                     .bizId(bizId)
                     .build();
             BaseEvent.EventMessage<SendRebateMessageEvent.RebateMessage> rebateMessageEventMessage = sendRebateMessageEvent.buildEventMessage(messageBody);
@@ -73,7 +79,7 @@ public class BehaviorRebateService implements IBehaviorRebateService {
 
 
             BehaviorRebateAggregate behaviorRebateAggregate = BehaviorRebateAggregate.builder()
-                    .behaviorRebateOrderEntity(behaviorRebateOrderEntity)
+                    .behaviorRebateOrderEntity(rebateOrderEntity)
                     .behaviorRebateTaskEntity(behaviorRebateTaskEntity)
                     .build();
 

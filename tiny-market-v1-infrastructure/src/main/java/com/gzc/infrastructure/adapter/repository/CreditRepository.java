@@ -41,7 +41,7 @@ public class CreditRepository implements ICreditRepository {
     private final EventPublisher eventPublisher;
 
     @Override
-    public void saveUserCreditTradeOrder(TradeAggregate tradeAggregate) {
+    public void adjustCreditAccount(TradeAggregate tradeAggregate) {
         String userId = tradeAggregate.getUserId();
         CreditAccountEntity creditAccountEntity = tradeAggregate.getCreditAccountEntity();
         CreditOrderEntity creditOrderEntity = tradeAggregate.getCreditOrderEntity();
@@ -107,6 +107,7 @@ public class CreditRepository implements ICreditRepository {
             lock.unlock();
         }
 
+        // 至此 积分账户调整完成
         try {
             // 发送消息【在事务外执行，如果失败还有任务补偿】
             eventPublisher.publish(task.getTopic(), task.getMessage());

@@ -52,7 +52,7 @@ public class TradeAggregate {
                 .build();
     }
 
-    public static CreditAdjustTaskEntity createCreditAdjustTaskEntity(String userId, String topic, String messageId, BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> message) {
+    public static CreditAdjustTaskEntity createCreditAdjustTaskEntity(String userId, String topic, String messageId, BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> message) {
         CreditAdjustTaskEntity taskEntity = new CreditAdjustTaskEntity();
         taskEntity.setUserId(userId);
         taskEntity.setTopic(topic);

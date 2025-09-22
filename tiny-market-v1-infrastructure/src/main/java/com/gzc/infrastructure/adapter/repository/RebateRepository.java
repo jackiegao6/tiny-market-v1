@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.gzc.domain.rebate.model.aggregate.BehaviorRebateAggregate;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateOrderEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateTaskEntity;
-import com.gzc.domain.rebate.model.valobj.BehaviorVO;
+import com.gzc.domain.rebate.model.valobj.BehaviorTypeVO;
 import com.gzc.domain.rebate.model.valobj.DailyBehaviorRebateVO;
 import com.gzc.domain.rebate.repository.IBehaviorRebateRepository;
 import com.gzc.infrastructure.dao.IDailyBehaviorRebateDao;
@@ -40,8 +40,10 @@ public class RebateRepository implements IBehaviorRebateRepository {
 
 
     @Override
-    public List<DailyBehaviorRebateVO> queryDailyBehaviorRebateConfig(BehaviorVO behaviorVO) {
-        List<DailyBehaviorRebate> dailyBehaviorRebates = dailyBehaviorRebateDao.queryDailyBehaviorRebateByBehaviorType(behaviorVO.getCode());
+    public List<DailyBehaviorRebateVO> queryDailyBehaviorRebateConfig(BehaviorTypeVO behaviorVO) {
+        String behaviorType = behaviorVO.getCode();
+        // 根据行为类型 那多所有的符合的 返利的东西配置 有可能只有增加积分 也有可能 增加积分并且增加抽奖次数
+        List<DailyBehaviorRebate> dailyBehaviorRebates = dailyBehaviorRebateDao.queryDailyBehaviorRebateByBehaviorType(behaviorType);
 
         List<DailyBehaviorRebateVO> dailyBehaviorRebateVOS = new ArrayList<>(dailyBehaviorRebates.size());
         for (DailyBehaviorRebate dailyBehaviorRebate : dailyBehaviorRebates) {
@@ -88,7 +90,7 @@ public class RebateRepository implements IBehaviorRebateRepository {
                     return 1;
                 } catch (DuplicateKeyException e) {
                     status.setRollbackOnly();
-                    log.error("写入返利记录，唯一索引冲突 userId: {}", userId, e);
+                    log.error("写入返利记录，唯一索引冲突 userId: {}", userId);
                     throw new AppException(ResponseCode.INDEX_DUP.getCode(), ResponseCode.INDEX_DUP.getInfo());
                 }
             });
@@ -96,7 +98,7 @@ public class RebateRepository implements IBehaviorRebateRepository {
             dbRouter.clear();
         }
 
-        // mq
+        // mq topic: send-rebate
         for (BehaviorRebateAggregate behaviorRebateAggregate : behaviorRebateAggregates) {
             BehaviorRebateTaskEntity behaviorRebateTaskEntity = behaviorRebateAggregate.getBehaviorRebateTaskEntity();
             Task task = Task.builder()
@@ -108,7 +110,7 @@ public class RebateRepository implements IBehaviorRebateRepository {
                 taskDao.updateTaskSendMessageCompleted(task);
             }catch (Exception e){
                 taskDao.updateTaskSendMessageFail(task);
-                log.error("mq 消息发送失败");
+                log.error("mq: send-rebate 已创建返利订单的消息 发送失败");
             }
         }
     }

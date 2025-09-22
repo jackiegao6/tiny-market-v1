@@ -18,7 +18,7 @@ import com.gzc.domain.credit.model.valobj.TradeTypeVO;
 import com.gzc.domain.credit.service.ICreditAdjustService;
 import com.gzc.domain.rebate.model.entity.BehaviorEntity;
 import com.gzc.domain.rebate.model.entity.BehaviorRebateOrderEntity;
-import com.gzc.domain.rebate.model.valobj.BehaviorVO;
+import com.gzc.domain.rebate.model.valobj.BehaviorTypeVO;
 import com.gzc.domain.rebate.service.IBehaviorRebateService;
 import com.gzc.domain.strategy.model.valobj.RuleWeightVO;
 import com.gzc.domain.strategy.service.raffle.IRaffleRule;
@@ -65,8 +65,9 @@ public class MarketController implements IMarketController {
     @Override
     public Response<Boolean> isUserCalenderSignRebate(String userId) {
         try {
-            String outBusinessNo = dateFormatDay.format(new Date());
-            List<BehaviorRebateOrderEntity> behaviorRebateOrderEntities = behaviorRebateService.queryOrderByOutBusinessNo(userId, outBusinessNo);
+            String bizId = dateFormatDay.format(new Date());
+            // 幂等处理：每个用户每天只能签到一次
+            List<BehaviorRebateOrderEntity> behaviorRebateOrderEntities = behaviorRebateService.queryOrderByOutBusinessNo(userId, bizId);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())
@@ -92,10 +93,10 @@ public class MarketController implements IMarketController {
         try {
             BehaviorEntity behaviorEntity = BehaviorEntity.builder()
                     .userId(userId)
-                    .behaviorVO(BehaviorVO.SIGN)
+                    .behaviorVO(BehaviorTypeVO.SIGN)
                     .outBusinessNo(dateFormatDay.format(new Date()))
                     .build();
-            behaviorRebateService.createRebateOrder(behaviorEntity);
+            List<String> rebateOrder = behaviorRebateService.createRebateOrder(behaviorEntity);
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())

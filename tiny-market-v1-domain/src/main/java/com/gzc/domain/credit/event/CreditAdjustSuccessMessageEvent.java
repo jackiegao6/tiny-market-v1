@@ -16,14 +16,14 @@ import java.util.Date;
  * @description 积分账户调整成功消息【充值、支付，成功消息】
  */
 @Component
-public class CreditAdjustSuccessMessageEvent extends BaseEvent<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> {
+public class CreditAdjustSuccessMessageEvent extends BaseEvent<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> {
 
     @Value("${spring.rabbitmq.topic.credit_adjust_success}")
     private String topic;
 
     @Override
-    public EventMessage<CreditAdjustSuccessMessage> buildEventMessage(CreditAdjustSuccessMessage data) {
-        return EventMessage.<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage>builder()
+    public EventMessage<CreditAdjustMessage> buildEventMessage(CreditAdjustMessage data) {
+        return EventMessage.<CreditAdjustSuccessMessageEvent.CreditAdjustMessage>builder()
                 .id(RandomStringUtils.randomNumeric(11))
                 .timestamp(new Date())
                 .data(data)
@@ -39,7 +39,7 @@ public class CreditAdjustSuccessMessageEvent extends BaseEvent<CreditAdjustSucce
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class CreditAdjustSuccessMessage {
+    public static class CreditAdjustMessage {
 
         /**
          * 用户ID

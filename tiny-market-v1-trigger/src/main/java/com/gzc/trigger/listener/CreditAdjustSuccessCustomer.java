@@ -2,7 +2,6 @@ package com.gzc.trigger.listener;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.gzc.domain.activity.model.entity.DeliveryOrderEntity;
 import com.gzc.domain.activity.service.IRaffleQuotaService;
 import com.gzc.domain.credit.event.CreditAdjustSuccessMessageEvent;
 import com.gzc.types.enums.ResponseCode;
@@ -31,15 +30,17 @@ public class CreditAdjustSuccessCustomer {
     @RabbitListener(queuesToDeclare = @Queue(value = "${spring.rabbitmq.topic.credit_adjust_success}"))
     public void listener(String message) {
         try {
-            BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> eventMessage = JSON.parseObject(message, new TypeReference<BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage>>() {
+            BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> eventMessage = JSON.parseObject(message, new TypeReference<BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage>>() {
             }.getType());
-            CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage creditAdjustSuccessMessage = eventMessage.getData();
+            CreditAdjustSuccessMessageEvent.CreditAdjustMessage creditAdjustSuccessMessage = eventMessage.getData();
 
-            // 积分调整
-            DeliveryOrderEntity deliveryOrderEntity = new DeliveryOrderEntity();
-            deliveryOrderEntity.setUserId(creditAdjustSuccessMessage.getUserId());
-            deliveryOrderEntity.setOutBusinessNo(creditAdjustSuccessMessage.getOutBusinessNo());
-            raffleQuotaService.updateOrder(deliveryOrderEntity);
+            // 至此 积分调整已经完成
+            // 为后续业务提供支持
+
+//            DeliveryOrderEntity deliveryOrderEntity = new DeliveryOrderEntity();
+//            deliveryOrderEntity.setUserId(creditAdjustSuccessMessage.getUserId());
+//            deliveryOrderEntity.setOutBusinessNo(creditAdjustSuccessMessage.getOutBusinessNo());
+//            raffleQuotaService.updateOrder(deliveryOrderEntity);
         } catch (AppException e) {
             if (ResponseCode.INDEX_DUP.getCode().equals(e.getCode())) {
                 log.warn("监听积分账户调整成功消息，进行交易商品发货，消费重复 topic: {} message: {}", topic, message, e);

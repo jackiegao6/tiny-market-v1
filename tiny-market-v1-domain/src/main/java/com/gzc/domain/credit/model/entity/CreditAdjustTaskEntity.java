@@ -24,7 +24,7 @@ public class CreditAdjustTaskEntity {
     /** 消息编号 */
     private String messageId;
     /** 消息主体 */
-    private BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> message;
+    private BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustMessage> message;
     /** 任务状态；create-创建、completed-完成、fail-失败 */
     private MQTaskStateVO state;
 

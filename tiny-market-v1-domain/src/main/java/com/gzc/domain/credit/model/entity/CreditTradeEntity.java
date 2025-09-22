@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * @description 增加额度实体
+ * @description 积分交易实体
  */
 @Data
 @Builder

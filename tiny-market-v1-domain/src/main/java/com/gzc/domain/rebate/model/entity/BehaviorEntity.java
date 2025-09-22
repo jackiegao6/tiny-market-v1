@@ -1,6 +1,6 @@
 package com.gzc.domain.rebate.model.entity;
 
-import com.gzc.domain.rebate.model.valobj.BehaviorVO;
+import com.gzc.domain.rebate.model.valobj.BehaviorTypeVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class BehaviorEntity {
 
     private String userId;
 
-    private BehaviorVO behaviorVO;
+    private BehaviorTypeVO behaviorVO;
 
     private String outBusinessNo;
 }

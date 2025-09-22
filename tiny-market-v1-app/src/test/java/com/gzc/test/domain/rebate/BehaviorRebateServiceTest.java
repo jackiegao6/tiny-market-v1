@@ -2,7 +2,7 @@ package com.gzc.test.domain.rebate;
 
 import com.alibaba.fastjson2.JSON;
 import com.gzc.domain.rebate.model.entity.BehaviorEntity;
-import com.gzc.domain.rebate.model.valobj.BehaviorVO;
+import com.gzc.domain.rebate.model.valobj.BehaviorTypeVO;
 import com.gzc.domain.rebate.service.IBehaviorRebateService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class BehaviorRebateServiceTest {
     public void test_createRebateOrder_4_skuRecharge_And_CreditAdjust() throws InterruptedException {
         BehaviorEntity behaviorEntity = new BehaviorEntity();
         behaviorEntity.setUserId("gao77");
-        behaviorEntity.setBehaviorVO(BehaviorVO.SIGN);
+        behaviorEntity.setBehaviorVO(BehaviorTypeVO.SIGN);
         // 重复的 OutBusinessNo 会报错唯一索引冲突，这也是保证幂等的手段，确保不会多记账
         behaviorEntity.setOutBusinessNo("20250913");
 

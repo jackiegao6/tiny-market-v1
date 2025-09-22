@@ -8,7 +8,7 @@ import com.gzc.domain.credit.model.entity.CreditAccountEntity;
  */
 public interface ICreditRepository {
 
-    void saveUserCreditTradeOrder(TradeAggregate tradeAggregate);
+    void adjustCreditAccount(TradeAggregate tradeAggregate);
 
     CreditAccountEntity queryUserCreditAccount(String userId);
 

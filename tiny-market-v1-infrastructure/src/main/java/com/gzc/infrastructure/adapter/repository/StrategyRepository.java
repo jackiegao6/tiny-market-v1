@@ -301,6 +301,7 @@ public class StrategyRepository implements IStrategyRepository {
         return lock;
     }
 
+    // todo 更改为mq的延迟队列
     @Override
     public void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO) {
         String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_CONSUME_Q;

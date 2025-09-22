@@ -11,6 +11,11 @@ import java.util.List;
 @Mapper
 public interface IDailyBehaviorRebateDao {
 
+    /**
+     * 查询
+     * @param behaviorType
+     * @return
+     */
     List<DailyBehaviorRebate> queryDailyBehaviorRebateByBehaviorType(String behaviorType);
 
 }
