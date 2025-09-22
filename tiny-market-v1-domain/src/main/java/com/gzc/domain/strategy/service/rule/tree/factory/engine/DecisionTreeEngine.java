@@ -36,11 +36,11 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         Map<String, RuleTreeNodeVO> treeNodeMap = ruleTreeVO.getTreeNodeMap();
 
         // 获取起始节点「根节点记录了第一个要执行的规则」
-        RuleTreeNodeVO ruleTreeNode = treeNodeMap.get(nextNodeKey);
+        RuleTreeNodeVO nextNodeVO = treeNodeMap.get(nextNodeKey);
         while (null != nextNodeKey) {
             // 获取决策节点
-            ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(ruleTreeNode.getRuleKey());
-            String ruleValue = ruleTreeNode.getRuleValue();
+            ILogicTreeNode logicTreeNode = logicTreeNodeGroup.get(nextNodeVO.getRuleKey());
+            String ruleValue = nextNodeVO.getRuleValue();
 
             // 决策节点计算
             DefaultTreeFactory.TreeActionEntity awardRuleEntity = logicTreeNode.logic(userId, strategyId, awardId, ruleValue, endDateTime);
@@ -48,8 +48,8 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
             strategyAwardData = awardRuleEntity.getStrategyAwardVO();
 
             // 获取下个节点
-            nextNodeKey = nextNode(ruleLogicCheckTypeVO.getCode(), ruleTreeNode.getTreeNodeLineVOList());
-            ruleTreeNode = treeNodeMap.get(nextNodeKey);
+            nextNodeKey = nextNode(ruleLogicCheckTypeVO.getCode(), nextNodeVO.getTreeNodeLineVOList());
+            nextNodeVO = treeNodeMap.get(nextNodeKey);
         }
 
         // 返回最终结果

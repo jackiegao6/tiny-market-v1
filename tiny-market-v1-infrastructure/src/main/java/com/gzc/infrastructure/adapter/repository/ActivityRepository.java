@@ -245,6 +245,7 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public boolean subtractionActivitySkuStock(Long sku, String cacheKey, Date endDateTime) {
+        // todo 这里实现的是无锁化设计
         // decr 内部封装为 先获取再递减
         long surplus = redisService.decr(cacheKey);
         if (surplus == 0) {
@@ -271,6 +272,7 @@ public class ActivityRepository implements IActivityRepository {
     /**
      * 这里是延迟的方法消息到 Redis 队列中。以此来减缓消费。（这里是一个双重减缓，一个是延迟队列，一个是定时的任务调度）
      * 用 Redis 的延迟队列实现“库存扣减的异步处理
+     * todo 改为mq的延迟队列
      */
     @Override
     public void skuStockConsumeSendQueue(ActivitySkuStockKeyVO activitySkuStockKeyVO) {

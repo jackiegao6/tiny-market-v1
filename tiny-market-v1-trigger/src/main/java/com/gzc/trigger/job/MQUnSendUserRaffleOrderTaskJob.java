@@ -44,6 +44,7 @@ public class MQUnSendUserRaffleOrderTaskJob {
                                 try {
                                     taskService.sendMessage(taskEntity);
                                     taskService.updateTaskSendMessageCompleted(taskEntity.getUserId(), taskEntity.getMessageId());
+                                    log.error("定时任务，发送MQ消息成功 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic());
                                 } catch (Exception e) {
                                     log.error("定时任务，发送MQ消息失败 userId: {} topic: {}", taskEntity.getUserId(), taskEntity.getTopic());
                                     taskService.updateTaskSendMessageFail(taskEntity.getUserId(), taskEntity.getMessageId());
