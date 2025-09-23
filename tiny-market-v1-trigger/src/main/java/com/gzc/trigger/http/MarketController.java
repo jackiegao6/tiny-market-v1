@@ -63,7 +63,7 @@ public class MarketController implements IMarketController {
      */
     @RequestMapping(value = "/is_calendar_sign_rebate", method = RequestMethod.POST)
     @Override
-    public Response<Boolean> isUserCalenderSignRebate(String userId) {
+    public Response<Boolean> isUserCalenderSignRebate(@RequestParam String userId) {
         try {
             String bizId = dateFormatDay.format(new Date());
             // 幂等处理：每个用户每天只能签到一次
@@ -88,7 +88,7 @@ public class MarketController implements IMarketController {
      */
     @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
     @Override
-    public Response<Boolean> calenderSignRebate(String userId) {
+    public Response<Boolean> calenderSignRebate(@RequestParam String userId) {
 
         try {
             BehaviorEntity behaviorEntity = BehaviorEntity.builder()
@@ -160,7 +160,7 @@ public class MarketController implements IMarketController {
      */
     @RequestMapping(value = "/query_user_credit_account", method = RequestMethod.POST)
     @Override
-    public Response<BigDecimal> queryCreditAccount(String userId) {
+    public Response<BigDecimal> queryCreditAccount(@RequestParam String userId) {
         try {
             log.info("查询用户积分值开始 userId:{}", userId);
             CreditAccountEntity creditAccountEntity = creditAdjustService.queryUserCreditAccount(userId);
@@ -184,7 +184,7 @@ public class MarketController implements IMarketController {
      */
     @RequestMapping(value = "/query_sku_product_list_by_activity_id", method = RequestMethod.POST)
     @Override
-    public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(Long activityId) {
+    public Response<List<SkuProductResponseDTO>> querySkuListByActivityId(@RequestParam Long activityId) {
         try {
             // 1. 参数校验
             if (null == activityId) {

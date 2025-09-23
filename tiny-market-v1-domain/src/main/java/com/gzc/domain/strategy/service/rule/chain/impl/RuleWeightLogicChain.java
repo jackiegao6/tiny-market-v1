@@ -40,7 +40,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
             // 该策略并未配置权重规则
             return next().logic(userId, strategyId);
         }
-        // 1. 根据用户ID查询用户抽奖消耗的积分值
+        // 1. 根据用户ID查询用户的总抽奖次数
         Map<Long, String> analyticalValueGroup = getAnalyticalValue(ruleValue);
         if (null == analyticalValueGroup || analyticalValueGroup.isEmpty()) return null;
 
@@ -50,7 +50,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
 
         Integer userJoinCount = strategyRepository.queryUserJoinCount(userId, strategyId);
 
-        // 3. 找出最小符合的值，也就是【4500 积分，能找到 4000:102,103,104,105】、【5000 积分，能找到 5000:102,103,104,105,106,107】
+        // 3. 找出最小符合的值，也就是【64，能找到 64:102,103,104,105】、【128，能找到 128:102,103,104,105,106,107】
         Long suitableValue = analyticalSortedKeys.stream()
                 .filter(key -> userJoinCount >= key)
                 .findFirst()

@@ -48,7 +48,6 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
      *
      * @param activityId 活动ID
      * @return 装配结果
-     * 接口：<a href="http://localhost:8098/api/v1/raffle/activity/armory">/api/v1/raffle/activity/armory</a>
      */
     @RequestMapping(value = "/armory", method = RequestMethod.GET)
     @Override
@@ -129,42 +128,4 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
         }
     }
 
-
-    // todo
-//    @RequestMapping(value = "/random_raffle", method = RequestMethod.POST)
-//    @Override
-//    public Response<RaffleResponseDTO> randomRaffle(@RequestBody RaffleRequestDTO requestDTO) {
-//
-//        try {
-//            log.info("随机抽奖开始 strategyId: {}", requestDTO.getStrategyId());
-//            // 调用抽奖接口
-//            RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(RaffleFactorEntity.builder()
-//                    .userId("system")
-//                    .strategyId(requestDTO.getStrategyId())
-//                    .build());
-//            // 封装返回结果
-//            Response<RaffleResponseDTO> response = Response.<RaffleResponseDTO>builder()
-//                    .code(ResponseCode.SUCCESS.getCode())
-//                    .info(ResponseCode.SUCCESS.getInfo())
-//                    .data(RaffleResponseDTO.builder()
-//                            .awardId(raffleAwardEntity.getAwardId())
-//                            .awardIndex(raffleAwardEntity.getSort())
-//                            .build())
-//                    .build();
-//            log.info("随机抽奖完成 strategyId: {} response: {}", requestDTO.getStrategyId(), JSON.toJSONString(response));
-//            return response;
-//        } catch (AppException e) {
-//            log.error("随机抽奖失败 strategyId：{} {}", requestDTO.getStrategyId(), e.getInfo());
-//            return Response.<RaffleResponseDTO>builder()
-//                    .code(e.getCode())
-//                    .info(e.getInfo())
-//                    .build();
-//        } catch (Exception e) {
-//            log.error("随机抽奖失败 strategyId：{}", requestDTO.getStrategyId(), e);
-//            return Response.<RaffleResponseDTO>builder()
-//                    .code(ResponseCode.UN_ERROR.getCode())
-//                    .info(ResponseCode.UN_ERROR.getInfo())
-//                    .build();
-//        }
-//    }
 }
