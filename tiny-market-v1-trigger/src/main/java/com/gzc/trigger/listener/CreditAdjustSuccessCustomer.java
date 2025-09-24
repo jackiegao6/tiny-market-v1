@@ -41,7 +41,7 @@ public class CreditAdjustSuccessCustomer {
             // 一种是积分购买次数导致的积分减少
             // 后续支持 外部支付导致的积分充值
 
-            // 如果是第二种就需要导致次数变更
+            // 如果是第二种就需要导致用户可抽取的sku次数变更
             if (TradeNameVO.CONVERT_SKU.getName().equals(creditAdjustSuccessMessage.getTradeNameVO().getName())){
 
                 DeliveryOrderEntity deliveryOrderEntity = new DeliveryOrderEntity();

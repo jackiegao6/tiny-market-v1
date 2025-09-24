@@ -416,7 +416,8 @@ public class StrategyRepository implements IStrategyRepository {
         for (String threshold : thresholds) {
             List<Integer> awardIds = weightThreshold2Awards.get(threshold);
             ArrayList<RuleWeightVO.Award> awards = new ArrayList<>();
-            List<StrategyAward> strategyAwards = strategyAwardDao.queryStrategyAwardListByAwardIds(awardIds);
+
+            List<StrategyAward> strategyAwards = strategyAwardDao.queryStrategyAwardListByAwardIds(awardIds, strategyId);
             for (StrategyAward strategyAward : strategyAwards) {
                 awards.add(RuleWeightVO.Award.builder()
                         .awardId(strategyAward.getAwardId())
