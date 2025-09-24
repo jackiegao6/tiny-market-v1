@@ -40,7 +40,6 @@ import java.util.List;
 
 @Slf4j
 @RestController()
-@CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
 @DubboService(version = "1.0")
 public class MarketController implements IMarketController {
@@ -86,7 +85,7 @@ public class MarketController implements IMarketController {
     /**
      * 签到接口
      */
-    @RequestMapping(value = "/calender_sign_rebate", method = RequestMethod.POST)
+    @RequestMapping(value = "/calendar_sign_rebate", method = RequestMethod.POST)
     @Override
     public Response<Boolean> calenderSignRebate(@RequestParam String userId) {
 

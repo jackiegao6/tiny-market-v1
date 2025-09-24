@@ -33,7 +33,6 @@ import java.util.Date;
  */
 @Slf4j
 @RestController()
-@CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
 @DubboService(version = "1.0")
 public class ProcessRaffleController implements IProcessRaffleController {

@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
-@CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/activity")
 public class DCCValueManageController implements IDCCValueManageController {
 

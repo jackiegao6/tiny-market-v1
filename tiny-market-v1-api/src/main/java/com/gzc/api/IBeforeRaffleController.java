@@ -14,6 +14,7 @@ public interface IBeforeRaffleController {
 
     /**
      * 活动装配，数据预热缓存
+     *
      * @param activityId 活动ID
      * @return 装配结果
      */
@@ -27,22 +28,12 @@ public interface IBeforeRaffleController {
      */
     Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(RaffleAwardListRequestDTO requestDTO);
 
-
-
-//    /**
-//     * 策略装配接口
-//     *
-//     * @param strategyId 策略ID
-//     * @return 装配结果
-//     */
-//    Response<Boolean> strategyArmory(Long strategyId);
-//
-//    /**
-//     * 随机抽奖接口
-//     *
-//     * @param requestDTO 请求参数
-//     * @return 抽奖结果
-//     */
-//    Response<RaffleResponseDTO> randomRaffle(RaffleRequestDTO requestDTO);
+    /**
+     * 查询用户累计的抽奖次数
+     *
+     * @param userId 用户id
+     * @return 累计的抽奖次数
+     */
+    Response<Integer> queryUserTotalCount(String userId);
 
 }

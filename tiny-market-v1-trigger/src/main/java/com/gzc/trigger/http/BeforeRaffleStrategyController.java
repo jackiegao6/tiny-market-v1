@@ -10,7 +10,6 @@ import com.gzc.domain.strategy.model.entity.StrategyAwardEntity;
 import com.gzc.domain.strategy.service.armory.IStrategyArmory;
 import com.gzc.domain.strategy.service.raffle.IRaffleAwardService;
 import com.gzc.domain.strategy.service.raffle.IRaffleRule;
-import com.gzc.domain.strategy.service.raffle.IRaffleStrategy;
 import com.gzc.types.enums.ResponseCode;
 import com.gzc.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@CrossOrigin("${app.config.cross-origin}")
 @RequestMapping("/api/${app.config.api-version}/raffle/strategy")
 @DubboService(version = "1.0")
 public class BeforeRaffleStrategyController implements IBeforeRaffleController {
@@ -36,8 +34,6 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
     private IStrategyArmory strategyArmory;
     @Resource
     private IRaffleAwardService raffleAwardService;
-    @Resource
-    private IRaffleStrategy raffleStrategy;
     @Resource
     private IRaffleRule raffleRule;
     @Resource
@@ -128,4 +124,12 @@ public class BeforeRaffleStrategyController implements IBeforeRaffleController {
         }
     }
 
+
+    @RequestMapping(value = "/query_total_count", method = RequestMethod.POST)
+    @Override
+    public Response<Integer> queryUserTotalCount(@RequestParam String userId) {
+
+
+        return null;
+    }
 }
