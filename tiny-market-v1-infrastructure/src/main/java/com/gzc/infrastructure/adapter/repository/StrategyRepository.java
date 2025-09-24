@@ -335,7 +335,7 @@ public class StrategyRepository implements IStrategyRepository {
         String cacheKey = Constants.RedisKey.STRATEGY_ID4ACTIVITY_KEY + activityId;
         Long strategyId = redisService.getValue(cacheKey);
         if (strategyId == null){
-            strategyId = raffleActivityDao.queryActivityIdByStrategyId(activityId);
+            strategyId = raffleActivityDao.queryStrategyIdByActivityId(activityId);
             redisService.setValue(cacheKey, strategyId);
         }
         return strategyId;
