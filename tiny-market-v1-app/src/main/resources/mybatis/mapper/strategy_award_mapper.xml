@@ -23,7 +23,7 @@
         where award_id in
             <foreach collection="awardIds" item="awardId" open="(" separator="," close=")">
                 #{awardId}
-            </foreach>
+            </foreach> and strategy_id = #{strategyId}
         order by sort asc
     </select>
 
